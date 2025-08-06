@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gorilla Tag Mods</title>
+  <style>
+    /* ==== Reset and Base ==== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0d0d0d;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* ==== Navigation Bar ==== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #111;
+      padding: 1em 2em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    }
+
+    nav h1 {
+      color: #0ff;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5em;
+    }
+
+    .nav-links button {
+      background: transparent;
+      color: #aaa;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      padding: 0.5em 1em;
+      transition: 0.3s;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-links button:hover,
+    .nav-links button.active {
+      color: #0ff;
+      border-bottom: 2px solid #0ff;
+    }
+
+    /* ==== Sections ==== */
+    section {
+      display: none;
+      padding: 100px 5% 60px;
+      min-height: 100vh;
+    }
+
+    section.active {
+      display: block;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==== Mod Cards ==== */
+    .mod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2em;
+      margin-top: 2em;
+    }
+
+    .mod-card {
+      background: #1a1a1a;
+      border: 2px solid #333;
+      padding: 1em;
+      border-radius: 10px;
+      transition: 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+    }
+
+    .mod-card:hover {
+      border-color: #0ff;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+      transform: translateY(-5px);
+    }
+
+    .mod-card h3 {
+      color: #0ff;
+      margin-bottom: 0.5em;
+    }
+
+    .mod-card p {
+      font-size: 0.9em;
+      color: #ccc;
+    }
+
+    .mod-card button {
+      margin-top: 1em;
+      background: #0ff;
+      border: none;
+      padding: 0.6em 1.2em;
+      color: #000;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .mod-card button:hover {
+      background: #00cccc;
+    }
+
+    /* ==== Responsive Padding ==== */
+    @media (max-width: 600px) {
+      nav h1 {
+        font-size: 1.1rem;
+      }
+
+      .nav-links {
+        gap: 1em;
+      }
+
+      .nav-links button {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- === Navigation Bar === -->
+  <nav>
+    <h1>Gorilla Tag Mods</h1>
+    <div class="nav-links">
+      <button class="tab-button active" onclick="showTab('home')">Home</button>
+      <button class="tab-button" onclick="showTab('comp')">Comp Cheats</button>
+      <button class="tab-button" onclick="showTab('unique')">Unique Mods</button>
+      <button class="tab-button" onclick="showTab('casting')">My Casting Mod</button>
+      <button class="tab-button" onclick="showTab('more')">More Mods</button>
+    </div>
+  </nav>
+
+  <!-- === Sections === -->
+  <section id="home" class="active">
+    <h2>Welcome to Gorilla Tag Mods</h2>
+    <div class="mod-grid">
+      <div class="mod-card">
+        <h3>Starter Pack</h3>
+        <p>A set of basic mods to get you started.</p>
+        <button>Download</button>
+      </div>
+      <div class="mod-card">
+        <h3>Speed Boost</h3>
+        <p>Gives you a slight but fair advantage in casual play.</p>
+        <button>Download</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="comp">
+    <h2>Competitive Cheats</h2>
+    <div class="mod-grid">
+      <div class="mod-card">
+        <h3>Wall Climb Boost</h3>
+        <p>Enhance your climbing with subtle force assists.</p>
+        <button>Download</button>
+      </div>
+      <div class="mod-card">
+        <h3>Ghost Mode</h3>
+        <p>Disappear temporarily to sneak around.</p>
+        <button>Download</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="unique">
+    <h2>Unique Mods</h2>
+    <div class="mod-grid">
+      <div class="mod-card">
+        <h3>Time Freeze</h3>
+        <p>Pause objects mid-air and freeze time locally.</p>
+        <button>Download</button>
+      </div>
+      <div class="mod-card">
+        <h3>Gorilla Shield</h3>
+        <p>Use a force shield to bounce off walls and players.</p>
+        <button>Download</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="casting">
+    <h2>My Casting Mod</h2>
+    <div class="mod-grid">
+      <div class="mod-card">
+        <h3>VR Cast v2</h3>
+        <p>Stream and cast your Gorilla Tag gameplay with effects.</p>
+        <button>Download</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="more">
+    <h2>More Mods</h2>
+    <div class="mod-grid">
+      <div class="mod-card">
+        <h3>Teleport Mod</h3>
+        <p>Teleport across the map instantly. VR only.</p>
+        <button>Download</button>
+      </div>
+      <div class="mod-card">
+        <h3>Invisibility Cloak</h3>
+        <p>Use a cloak that turns you invisible on activation.</p>
+        <button>Download</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- === JavaScript for Tabs === -->
+  <script>
+    function showTab(tabId) {
+      const sections = document.querySelectorAll("section");
+      const buttons = document.querySelectorAll(".tab-button");
+
+      sections.forEach(section => {
+        section.classList.remove("active");
+      });
+
+      buttons.forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      document.getElementById(tabId).classList.add("active");
+      event.target.classList.add("active");
+    }
+  </script>
+
+</body>
+</html>
