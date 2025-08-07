@@ -1,258 +1,1535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gorilla Tag Mods</title>
-  <style>
-    /* ==== Reset and Base ==== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      scroll-behavior: smooth;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONO HUB | Gorilla Tag Premium Mods</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0d0d0d;
-      color: #fff;
-      overflow-x: hidden;
-    }
+        :root {
+            --primary: #6a00f4;
+            --secondary: #00f4e9;
+            --background: #0a0a15;
+            --text: #ffffff;
+            --accent: #ff00c8;
+            --card-bg: rgba(20, 20, 40, 0.8);
+            --theme-name: "neon-purple";
+            --glow: 0 0 20px rgba(106, 0, 244, 0.7);
+        }
 
-    /* ==== Navigation Bar ==== */
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: #111;
-      padding: 1em 2em;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.6);
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    nav h1 {
-      color: #0ff;
-      font-size: 1.4rem;
-      letter-spacing: 1px;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            overflow-x: hidden;
+            cursor: none;
+            position: relative;
+            min-height: 100vh;
+        }
 
-    .nav-links {
-      display: flex;
-      gap: 1.5em;
-    }
+        body.show-cursor {
+            cursor: auto;
+        }
 
-    .nav-links button {
-      background: transparent;
-      color: #aaa;
-      border: none;
-      cursor: pointer;
-      font-size: 1em;
-      padding: 0.5em 1em;
-      transition: 0.3s;
-      border-bottom: 2px solid transparent;
-    }
+        /* Space Background */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
 
-    .nav-links button:hover,
-    .nav-links button.active {
-      color: #0ff;
-      border-bottom: 2px solid #0ff;
-    }
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="10" cy="10" r="0.5" fill="white"/><circle cx="20" cy="30" r="0.7" fill="white"/><circle cx="30" cy="70" r="0.3" fill="white"/><circle cx="40" cy="40" r="0.5" fill="white"/><circle cx="50" cy="80" r="0.4" fill="white"/><circle cx="60" cy="20" r="0.6" fill="white"/><circle cx="70" cy="50" r="0.3" fill="white"/><circle cx="80" cy="90" r="0.5" fill="white"/><circle cx="90" cy="10" r="0.4" fill="white"/></svg>');
+            animation: twinkle 8s infinite;
+        }
 
-    /* ==== Sections ==== */
-    section {
-      display: none;
-      padding: 100px 5% 60px;
-      min-height: 100vh;
-    }
+        .stars:nth-child(2) {
+            animation-delay: 2s;
+            opacity: 0.7;
+            transform: scale(1.2);
+        }
 
-    section.active {
-      display: block;
-      animation: fadeIn 0.6s ease-in-out;
-    }
+        .stars:nth-child(3) {
+            animation-delay: 4s;
+            opacity: 0.5;
+            transform: scale(0.8);
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
 
-    /* ==== Mod Cards ==== */
-    .mod-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2em;
-      margin-top: 2em;
-    }
+        .shooting-star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px white;
+            opacity: 0;
+        }
 
-    .mod-card {
-      background: #1a1a1a;
-      border: 2px solid #333;
-      padding: 1em;
-      border-radius: 10px;
-      transition: 0.3s ease;
-      box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-    }
+        .asteroid {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #aaa;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
 
-    .mod-card:hover {
-      border-color: #0ff;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
-      transform: translateY(-5px);
-    }
+        .mono-hub-text-bg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20vw;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.02);
+            z-index: -1;
+            animation: subtleShake 15s infinite ease-in-out;
+            pointer-events: none;
+            user-select: none;
+        }
 
-    .mod-card h3 {
-      color: #0ff;
-      margin-bottom: 0.5em;
-    }
+        @keyframes subtleShake {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0.5deg); }
+            25% { transform: translate(-50%, -50%) rotate(-0.5deg) translateY(-10px); }
+            50% { transform: translate(-50%, -50%) rotate(0.5deg) translateY(5px); }
+            75% { transform: translate(-50%, -50%) rotate(-0.3deg) translateY(-5px); }
+        }
 
-    .mod-card p {
-      font-size: 0.9em;
-      color: #ccc;
-    }
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1.5s ease-out;
+        }
 
-    .mod-card button {
-      margin-top: 1em;
-      background: #0ff;
-      border: none;
-      padding: 0.6em 1.2em;
-      color: #000;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: scale(1);
+            opacity: 1;
+            transition: all 0.5s ease;
+        }
 
-    .mod-card button:hover {
-      background: #00cccc;
-    }
+        .mono-logo {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 40px;
+            position: relative;
+            animation: float 6s ease-in-out infinite, glowPulse 4s infinite alternate;
+        }
 
-    /* ==== Responsive Padding ==== */
-    @media (max-width: 600px) {
-      nav h1 {
-        font-size: 1.1rem;
-      }
+        .mono-logo-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-      .nav-links {
-        gap: 1em;
-      }
+        .logo-m {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 140px;
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 30px var(--primary);
+            position: relative;
+            z-index: 1;
+        }
 
-      .nav-links button {
-        font-size: 0.9em;
-      }
-    }
-  </style>
+        .logo-h {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 140px;
+            font-weight: 900;
+            color: var(--secondary);
+            text-shadow: 0 0 30px var(--secondary);
+            transform: rotate(45deg) translateX(-10px);
+            position: absolute;
+            z-index: 2;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 15px var(--primary)); }
+            100% { filter: drop-shadow(0 0 30px var(--primary)); }
+        }
+
+        .loading-bar-container {
+            width: 400px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+            box-shadow: 0 0 20px rgba(106, 0, 244, 0.7);
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: var(--text);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            opacity: 0.9;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            mix-blend-mode: difference;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease;
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(106, 0, 244, 0.8) 0%, rgba(106, 0, 244, 0) 70%);
+            pointer-events: none;
+            z-index: 9997;
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease-out;
+            filter: blur(10px);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            margin-bottom: 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.5;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(106, 0, 244, 0.5);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 10px 0;
+            position: relative;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            opacity: 1;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Mod Section */
+        .main-mod {
+            display: flex;
+            gap: 50px;
+            margin: 80px 0;
+            align-items: center;
+        }
+
+        .mod-image {
+            flex: 1;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .mod-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(106, 0, 244, 0.3), rgba(0, 244, 233, 0.3));
+            z-index: 1;
+        }
+
+        .mod-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .mod-image:hover img {
+            transform: scale(1.05) rotate(1deg);
+        }
+
+        .mod-content {
+            flex: 1;
+        }
+
+        .mod-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.1;
+            text-shadow: 0 0 20px rgba(106, 0, 244, 0.3);
+        }
+
+        .mod-description {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+
+        .mod-features {
+            margin-bottom: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .feature-icon {
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .download-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .download-btn {
+            padding: 18px 40px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(106, 0, 244, 0.5);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(106, 0, 244, 0.7);
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .version-info {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-left: 20px;
+        }
+
+        .status-working {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+
+        /* Discord Section */
+        .discord-section {
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.8), rgba(114, 137, 218, 0.8));
+            padding: 80px 0;
+            border-radius: 20px;
+            margin: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .discord-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://discord.com/assets/1c8a54f25d101bdc607cec7228247a9a.svg') center/cover no-repeat;
+            opacity: 0.1;
+        }
+
+        .discord-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .discord-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .discord-section p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+        }
+
+        .discord-btn {
+            display: inline-block;
+            padding: 20px 50px;
+            background: white;
+            color: #5865F2;
+            border-radius: 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discord-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(88, 101, 242, 0.1), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .discord-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .discord-btn:hover::before {
+            left: 100%;
+        }
+
+        .discord-btn i {
+            margin-right: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 50px 0 30px;
+            text-align: center;
+            margin-top: 100px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.5;
+        }
+
+        .footer-logo {
+            margin-bottom: 30px;
+        }
+
+        .footer-logo .logo-text {
+            font-size: 2.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .copyright {
+            opacity: 0.5;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 100;
+        }
+
+        .theme-btn {
+            background: var(--card-bg);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .theme-btn i {
+            font-size: 1.8rem;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover i {
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary);
+        }
+
+        .theme-options {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            width: 250px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-options.show {
+            display: block;
+            animation: fadeInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: none;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .theme-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .theme-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .theme-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            margin-right: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .theme-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--card-bg);
+            border-radius: 50px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .music-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: none;
+            transition: all 0.3s ease;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.8;
+        }
+
+        .music-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .volume-slider {
+            width: 120px;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .volume-slider:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: none;
+            box-shadow: 0 0 10px var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .now-playing {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .now-playing:hover {
+            opacity: 1;
+            max-width: 300px;
+        }
+
+        /* YouTube IFrame (hidden) */
+        #youtubePlayer {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-mod {
+                flex-direction: column;
+            }
+
+            .mod-image {
+                width: 100%;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .mod-content {
+                text-align: center;
+                margin-top: 50px;
+            }
+
+            .mod-description {
+                margin: 0 auto 30px;
+            }
+
+            .download-section {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .mod-title {
+                font-size: 2.5rem;
+            }
+
+            .discord-section h2 {
+                font-size: 2.2rem;
+            }
+
+            .discord-section p {
+                font-size: 1.1rem;
+            }
+
+            .music-player {
+                flex-direction: column;
+                border-radius: 20px;
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .now-playing {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .mod-title {
+                font-size: 2rem;
+            }
+
+            .download-btn {
+                padding: 15px 30px;
+                font-size: 1rem;
+            }
+
+            .discord-btn {
+                padding: 15px 30px;
+                font-size: 1rem;
+            }
+
+            .theme-options {
+                width: 200px;
+            }
+        }
+
+        /* Theme Colors */
+        .theme-neon-purple { background: linear-gradient(135deg, #6a00f4, #00f4e9); }
+        .theme-cosmic-blue { background: linear-gradient(135deg, #0061ff, #60efff); }
+        .theme-matrix-green { background: linear-gradient(135deg, #00f260, #05c0ff); }
+        .theme-fiery-red { background: linear-gradient(135deg, #ff0f7b, #f89b29); }
+        .theme-galactic-purple { background: linear-gradient(135deg, #7122fa, #ff61d3); }
+        .theme-cyberpunk { background: linear-gradient(135deg, #ff3cac, #562b7c, #2b86c5); }
+        .theme-neon-yellow { background: linear-gradient(135deg, #f9f047, #0fd850); }
+        .theme-ocean-wave { background: linear-gradient(135deg, #00b4db, #0083b0); }
+        .theme-sunset-orange { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
+        .theme-mint-fresh { background: linear-gradient(135deg, #0cebeb, #20e3b2, #29ffc6); }
+        .theme-lavender-dream { background: linear-gradient(135deg, #e2b0ff, #9f44d3); }
+        .theme-ice-cold { background: linear-gradient(135deg, #00d2ff, #3a7bd5); }
+    </style>
 </head>
 <body>
-
-  <!-- === Navigation Bar === -->
-  <nav>
-    <h1>Gorilla Tag Mods</h1>
-    <div class="nav-links">
-      <button class="tab-button active" onclick="showTab('home')">Home</button>
-      <button class="tab-button" onclick="showTab('comp')">Comp Cheats</button>
-      <button class="tab-button" onclick="showTab('unique')">Unique Mods</button>
-      <button class="tab-button" onclick="showTab('casting')">My Casting Mod</button>
-      <button class="tab-button" onclick="showTab('more')">More Mods</button>
+    <!-- Space Background Elements -->
+    <div class="space-bg">
+        <div class="stars"></div>
+        <div class="stars"></div>
+        <div class="stars"></div>
+        <!-- Shooting stars will be added dynamically -->
+        <!-- Asteroids will be added dynamically -->
     </div>
-  </nav>
 
-  <!-- === Sections === -->
-  <section id="home" class="active">
-    <h2>Welcome to Gorilla Tag Mods</h2>
-    <div class="mod-grid">
-      <div class="mod-card">
-        <h3>Starter Pack</h3>
-        <p>A set of basic mods to get you started.</p>
-        <button>Download</button>
-      </div>
-      <div class="mod-card">
-        <h3>Speed Boost</h3>
-        <p>Gives you a slight but fair advantage in casual play.</p>
-        <button>Download</button>
-      </div>
+    <div class="mono-hub-text-bg">MONO HUB</div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-content">
+            <div class="mono-logo">
+                <div class="mono-logo-inner">
+                    <div class="logo-m">M</div>
+                    <div class="logo-h">H</div>
+                </div>
+            </div>
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+            <div class="loading-text" id="loadingText">INITIALIZING MONO HUB</div>
+        </div>
     </div>
-  </section>
 
-  <section id="comp">
-    <h2>Competitive Cheats</h2>
-    <div class="mod-grid">
-      <div class="mod-card">
-        <h3>Wall Climb Boost</h3>
-        <p>Enhance your climbing with subtle force assists.</p>
-        <button>Download</button>
-      </div>
-      <div class="mod-card">
-        <h3>Ghost Mode</h3>
-        <p>Disappear temporarily to sneak around.</p>
-        <button>Download</button>
-      </div>
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-trail" id="cursorTrail"></div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContainer">
+        <header>
+            <a href="#" class="logo">
+                <div class="logo-img">
+                    <div class="mono-logo-inner" style="width: 50px; height: 50px; font-size: 35px;">
+                        <div class="logo-m">M</div>
+                        <div class="logo-h">H</div>
+                    </div>
+                </div>
+                <span class="logo-text">MONO HUB</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#mod">LegS Panel</a></li>
+                    <li><a href="#discord">Discord</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section id="mod" class="main-mod">
+                <div class="mod-image">
+                    <img src="https://via.placeholder.com/800x500/1a1a2e/6a00f4?text=LegS+Casting+Panel" alt="LegS Casting Panel Preview">
+                </div>
+                <div class="mod-content">
+                    <h1 class="mod-title">LegS Casting Panel</h1>
+                    <p class="mod-description">
+                        The ultimate Gorilla Tag modification that gives you complete control over your gameplay experience. 
+                        With our premium LegS Casting Panel, you'll unlock features never seen before in Gorilla Tag.
+                    </p>
+
+                    <div class="mod-features">
+                        <div class="feature-item">
+                            <span class="feature-icon"><i class="fas fa-bolt"></i></span>
+                            <span>Complete movement control with advanced physics</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon"><i class="fas fa-eye"></i></span>
+                            <span>Visual customization with real-time adjustments</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon"><i class="fas fa-shield-alt"></i></span>
+                            <span>Undetectable by current anti-cheat systems</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon"><i class="fas fa-sliders-h"></i></span>
+                            <span>Intuitive in-game control panel</span>
+                        </div>
+                    </div>
+
+                    <div class="download-section">
+                        <button class="download-btn">
+                            <i class="fas fa-download"></i> Download v2.4.1
+                        </button>
+                        <span class="status-badge status-working">WORKING</span>
+                    </div>
+
+                    <p class="version-info">Last updated: August 2025 | Compatible with Gorilla Tag v5.7.2</p>
+                </div>
+            </section>
+
+            <section class="discord-section" id="discord">
+                <div class="discord-content">
+                    <h2>JOIN OUR DISCORD</h2>
+                    <p>
+                        Become part of the Mono Hub community! Get the latest updates, exclusive beta access, 
+                        and connect with other Gorilla Tag enthusiasts. Our developers are always active and ready to help.
+                    </p>
+                    <a href="https://discord.gg/Vf2SSf9C" class="discord-btn" target="_blank">
+                        <i class="fab fa-discord"></i> Join Now
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-logo">
+                <a href="#" class="logo">
+                    <span class="logo-text">MONO HUB</span>
+                </a>
+            </div>
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+                <a href="#contact">Contact</a>
+                <a href="#faq">FAQ</a>
+                <a href="#status">Status</a>
+            </div>
+            <p class="copyright">© 2025 MONO HUB. Not affiliated with Gorilla Tag or Another Axiom.</p>
+        </footer>
     </div>
-  </section>
 
-  <section id="unique">
-    <h2>Unique Mods</h2>
-    <div class="mod-grid">
-      <div class="mod-card">
-        <h3>Time Freeze</h3>
-        <p>Pause objects mid-air and freeze time locally.</p>
-        <button>Download</button>
-      </div>
-      <div class="mod-card">
-        <h3>Gorilla Shield</h3>
-        <p>Use a force shield to bounce off walls and players.</p>
-        <button>Download</button>
-      </div>
+    <!-- Theme Selector -->
+    <div class="theme-selector">
+        <button class="theme-btn" id="themeBtn">
+            <i class="fas fa-palette"></i>
+        </button>
+        <div class="theme-options" id="themeOptions">
+            <div class="theme-option" data-theme="neon-purple">
+                <div class="theme-color theme-neon-purple"></div>
+                <span class="theme-name">Neon Purple</span>
+            </div>
+            <div class="theme-option" data-theme="cosmic-blue">
+                <div class="theme-color theme-cosmic-blue"></div>
+                <span class="theme-name">Cosmic Blue</span>
+            </div>
+            <div class="theme-option" data-theme="matrix-green">
+                <div class="theme-color theme-matrix-green"></div>
+                <span class="theme-name">Matrix Green</span>
+            </div>
+            <div class="theme-option" data-theme="fiery-red">
+                <div class="theme-color theme-fiery-red"></div>
+                <span class="theme-name">Fiery Red</span>
+            </div>
+            <div class="theme-option" data-theme="galactic-purple">
+                <div class="theme-color theme-galactic-purple"></div>
+                <span class="theme-name">Galactic Purple</span>
+            </div>
+            <div class="theme-option" data-theme="cyberpunk">
+                <div class="theme-color theme-cyberpunk"></div>
+                <span class="theme-name">Cyberpunk</span>
+            </div>
+            <div class="theme-option" data-theme="neon-yellow">
+                <div class="theme-color theme-neon-yellow"></div>
+                <span class="theme-name">Neon Yellow</span>
+            </div>
+            <div class="theme-option" data-theme="ocean-wave">
+                <div class="theme-color theme-ocean-wave"></div>
+                <span class="theme-name">Ocean Wave</span>
+            </div>
+            <div class="theme-option" data-theme="sunset-orange">
+                <div class="theme-color theme-sunset-orange"></div>
+                <span class="theme-name">Sunset Orange</span>
+            </div>
+            <div class="theme-option" data-theme="mint-fresh">
+                <div class="theme-color theme-mint-fresh"></div>
+                <span class="theme-name">Mint Fresh</span>
+            </div>
+            <div class="theme-option" data-theme="lavender-dream">
+                <div class="theme-color theme-lavender-dream"></div>
+                <span class="theme-name">Lavender Dream</span>
+            </div>
+            <div class="theme-option" data-theme="ice-cold">
+                <div class="theme-color theme-ice-cold"></div>
+                <span class="theme-name">Ice Cold</span>
+            </div>
+        </div>
     </div>
-  </section>
 
-  <section id="casting">
-    <h2>My Casting Mod</h2>
-    <div class="mod-grid">
-      <div class="mod-card">
-        <h3>VR Cast v2</h3>
-        <p>Stream and cast your Gorilla Tag gameplay with effects.</p>
-        <button>Download</button>
-      </div>
+    <!-- Music Player -->
+    <div class="music-player">
+        <div class="now-playing" id="nowPlaying">Now Playing: MONO HUB Theme</div>
+        <div class="music-controls">
+            <button class="music-btn" id="prevBtn">
+                <i class="fas fa-step-backward"></i>
+            </button>
+            <button class="music-btn" id="playBtn">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="music-btn" id="nextBtn">
+                <i class="fas fa-step-forward"></i>
+            </button>
+        </div>
+        <div class="volume-control">
+            <button class="music-btn" id="muteBtn">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-slider" id="volumeSlider">
+        </div>
     </div>
-  </section>
 
-  <section id="more">
-    <h2>More Mods</h2>
-    <div class="mod-grid">
-      <div class="mod-card">
-        <h3>Teleport Mod</h3>
-        <p>Teleport across the map instantly. VR only.</p>
-        <button>Download</button>
-      </div>
-      <div class="mod-card">
-        <h3>Invisibility Cloak</h3>
-        <p>Use a cloak that turns you invisible on activation.</p>
-        <button>Download</button>
-      </div>
-    </div>
-  </section>
+    <!-- YouTube IFrame (hidden) -->
+    <iframe id="youtubePlayer" style="display: none;" width="0" height="0" src="https://www.youtube.com/embed/qggxTtnKTMo?list=PLRxstPJCtZLG6VD7JpptZ1ARmSA37mjl_&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-  <!-- === JavaScript for Tabs === -->
-  <script>
-    function showTab(tabId) {
-      const sections = document.querySelectorAll("section");
-      const buttons = document.querySelectorAll(".tab-button");
+    <script>
+        // Space Background Animation
+        function createShootingStar() {
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            document.querySelector('.space-bg').appendChild(star);
 
-      sections.forEach(section => {
-        section.classList.remove("active");
-      });
+            const duration = Math.random() * 3000 + 2000;
+            const delay = Math.random() * 5000;
 
-      buttons.forEach(btn => {
-        btn.classList.remove("active");
-      });
+            star.style.transition = `all ${duration}ms linear ${delay}ms`;
+            star.style.opacity = '1';
 
-      document.getElementById(tabId).classList.add("active");
-      event.target.classList.add("active");
-    }
-  </script>
+            setTimeout(() => {
+                star.style.transform = `translate(${Math.random() * 500 - 250}px, ${Math.random() * 500 - 250}px)`;
+                star.style.opacity = '0';
 
+                setTimeout(() => {
+                    star.remove();
+                    createShootingStar();
+                }, duration);
+            }, 10);
+        }
+
+        function createAsteroid() {
+            const asteroid = document.createElement('div');
+            asteroid.className = 'asteroid';
+            asteroid.style.left = `${Math.random() * 100}%`;
+            asteroid.style.top = `${Math.random() * 100}%`;
+            document.querySelector('.space-bg').appendChild(asteroid);
+
+            const duration = Math.random() * 60000 + 30000;
+            const delay = Math.random() * 10000;
+
+            asteroid.style.transition = `all ${duration}ms linear ${delay}ms`;
+
+            setTimeout(() => {
+                asteroid.style.transform = `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px)`;
+
+                setTimeout(() => {
+                    asteroid.remove();
+                    createAsteroid();
+                }, duration);
+            }, 10);
+        }
+
+        // Initialize space elements
+        for (let i = 0; i < 5; i++) {
+            createShootingStar();
+            createAsteroid();
+        }
+
+        // Loading Screen Animation
+        const loadingBar = document.getElementById('loadingBar');
+        const loadingText = document.getElementById('loadingText');
+        const loadingScreen = document.querySelector('.loading-screen');
+
+        let progress = 0;
+        const loadingInterval = setInterval(() => {
+            progress += Math.random() * 10;
+            if (progress > 100) progress = 100;
+            loadingBar.style.width = `${progress}%`;
+
+            if (progress < 30) {
+                loadingText.textContent = "LOADING CORE SYSTEMS...";
+            } else if (progress < 60) {
+                loadingText.textContent = "INITIALIZING MODULES...";
+            } else if (progress < 90) {
+                loadingText.textContent = "PREPARING INTERFACE...";
+            } else {
+                loadingText.textContent = "LAUNCHING MONO HUB...";
+            }
+
+            if (progress === 100) {
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        document.getElementById('mainContainer').classList.add('visible');
+
+                        // Start music after loading
+                        setTimeout(() => {
+                            document.body.classList.add('show-cursor');
+                            playMusic();
+                        }, 500);
+                    }, 1500);
+                }, 500);
+            }
+        }, 200);
+
+        // Custom Cursor
+        const cursor = document.getElementById('cursor');
+        const cursorTrail = document.getElementById('cursorTrail');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = `${e.clientX}px`;
+            cursor.style.top = `${e.clientY}px`;
+
+            setTimeout(() => {
+                cursorTrail.style.left = `${e.clientX}px`;
+                cursorTrail.style.top = `${e.clientY}px`;
+            }, 100);
+        });
+
+        document.addEventListener('mousedown', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(0.7)';
+            cursorTrail.style.width = '40px';
+            cursorTrail.style.height = '40px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursorTrail.style.width = '60px';
+            cursorTrail.style.height = '60px';
+        });
+
+        // Hover effects for interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, .theme-option, .mod-image, .download-btn, .discord-btn');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cursor.style.backgroundColor = 'var(--accent)';
+                cursorTrail.style.background = 'radial-gradient(circle, rgba(255, 0, 200, 0.8) 0%, rgba(255, 0, 200, 0) 70%)';
+            });
+
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                cursorTrail.style.background = 'radial-gradient(circle, rgba(106, 0, 244, 0.8) 0%, rgba(106, 0, 244, 0) 70%)';
+            });
+        });
+
+        // Theme Selector
+        const themeBtn = document.getElementById('themeBtn');
+        const themeOptions = document.getElementById('themeOptions');
+        const themeOptionElements = document.querySelectorAll('.theme-option');
+
+        themeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            themeOptions.classList.toggle('show');
+        });
+
+        themeOptionElements.forEach(option => {
+            option.addEventListener('click', () => {
+                const themeName = option.getAttribute('data-theme');
+
+                // Update theme variables based on selection
+                switch(themeName) {
+                    case 'cosmic-blue':
+                        document.documentElement.style.setProperty('--primary', '#0061ff');
+                        document.documentElement.style.setProperty('--secondary', '#60efff');
+                        document.documentElement.style.setProperty('--accent', '#00ffea');
+                        break;
+                    case 'matrix-green':
+                        document.documentElement.style.setProperty('--primary', '#00f260');
+                        document.documentElement.style.setProperty('--secondary', '#05c0ff');
+                        document.documentElement.style.setProperty('--accent', '#00ff88');
+                        break;
+                    case 'fiery-red':
+                        document.documentElement.style.setProperty('--primary', '#ff0f7b');
+                        document.documentElement.style.setProperty('--secondary', '#f89b29');
+                        document.documentElement.style.setProperty('--accent', '#ff4d00');
+                        break;
+                    case 'galactic-purple':
+                        document.documentElement.style.setProperty('--primary', '#7122fa');
+                        document.documentElement.style.setProperty('--secondary', '#ff61d3');
+                        document.documentElement.style.setProperty('--accent', '#ff00aa');
+                        break;
+                    case 'cyberpunk':
+                        document.documentElement.style.setProperty('--primary', '#ff3cac');
+                        document.documentElement.style.setProperty('--secondary', '#562b7c');
+                        document.documentElement.style.setProperty('--accent', '#2b86c5');
+                        break;
+                    case 'neon-yellow':
+                        document.documentElement.style.setProperty('--primary', '#f9f047');
+                        document.documentElement.style.setProperty('--secondary', '#0fd850');
+                        document.documentElement.style.setProperty('--accent', '#00ff6a');
+                        break;
+                    case 'ocean-wave':
+                        document.documentElement.style.setProperty('--primary', '#00b4db');
+                        document.documentElement.style.setProperty('--secondary', '#0083b0');
+                        document.documentElement.style.setProperty('--accent', '#00e1ff');
+                        break;
+                    case 'sunset-orange':
+                        document.documentElement.style.setProperty('--primary', '#ff7e5f');
+                        document.documentElement.style.setProperty('--secondary', '#feb47b');
+                        document.documentElement.style.setProperty('--accent', '#ff9e00');
+                        break;
+                    case 'mint-fresh':
+                        document.documentElement.style.setProperty('--primary', '#0cebeb');
+                        document.documentElement.style.setProperty('--secondary', '#20e3b2');
+                        document.documentElement.style.setProperty('--accent', '#29ffc6');
+                        break;
+                    case 'lavender-dream':
+                        document.documentElement.style.setProperty('--primary', '#e2b0ff');
+                        document.documentElement.style.setProperty('--secondary', '#9f44d3');
+                        document.documentElement.style.setProperty('--accent', '#d57aff');
+                        break;
+                    case 'ice-cold':
+                        document.documentElement.style.setProperty('--primary', '#00d2ff');
+                        document.documentElement.style.setProperty('--secondary', '#3a7bd5');
+                        document.documentElement.style.setProperty('--accent', '#7fffd4');
+                        break;
+                    default: // neon-purple theme
+                        document.documentElement.style.setProperty('--primary', '#6a00f4');
+                        document.documentElement.style.setProperty('--secondary', '#00f4e9');
+                        document.documentElement.style.setProperty('--accent', '#ff00c8');
+                }
+
+                document.documentElement.setAttribute('data-theme', themeName);
+                themeOptions.classList.remove('show');
+            });
+        });
+
+        // Close theme options when clicking outside
+        document.addEventListener('click', () => {
+            themeOptions.classList.remove('show');
+        });
+
+        // Music Player
+        let player;
+        let isPlaying = false;
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const nowPlaying = document.getElementById('nowPlaying');
+
+        // YouTube API
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtubePlayer', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Player is ready
+            updateButtonIcon();
+            player.setVolume(volumeSlider.value * 100);
+
+            // Start music automatically on loading screen
+            player.playVideo();
+            isPlaying = true;
+            updateButtonIcon();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                nowPlaying.textContent = "Now Playing: MONO HUB Theme";
+            } else {
+                isPlaying = false;
+            }
+            updateButtonIcon();
+        }
+
+        function playMusic() {
+            if (player) {
+                player.playVideo();
+                isPlaying = true;
+                updateButtonIcon();
+            }
+        }
+
+        function pauseMusic() {
+            if (player) {
+                player.pauseVideo();
+                isPlaying = false;
+                updateButtonIcon();
+            }
+        }
+
+        function updateButtonIcon() {
+            if (isPlaying) {
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (player) {
+                player.previousVideo();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (player) {
+                player.nextVideo();
+            }
+        });
+
+        let isMuted = false;
+        muteBtn.addEventListener('click', () => {
+            if (player) {
+                if (isMuted) {
+                    player.unMute();
+                    muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    volumeSlider.value = player.getVolume() / 100;
+                } else {
+                    player.mute();
+                    muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                }
+                isMuted = !isMuted;
+            }
+        });
+
+        volumeSlider.addEventListener('input', () => {
+            if (player) {
+                const volume = volumeSlider.value * 100;
+                player.setVolume(volume);
+
+                if (volume <= 0) {
+                    muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    isMuted = true;
+                } else {
+                    muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    isMuted = false;
+                }
+            }
+        });
+
+        // Load YouTube API
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Animate mod image on scroll
+        const modImage = document.querySelector('.mod-image');
+        const animateModImage = () => {
+            const elementPosition = modImage.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight / 1.2;
+
+            if (elementPosition < screenPosition) {
+                modImage.style.opacity = '1';
+                modImage.style.transform = 'perspective(1000px) rotateY(0deg)';
+            }
+        };
+
+        window.addEventListener('scroll', animateModImage);
+
+        // Initial check in case elements are already in view
+        animateModImage();
+    </script>
 </body>
 </html>
