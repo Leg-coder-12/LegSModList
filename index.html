@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Access Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         * {
             margin: 0;
@@ -40,18 +41,18 @@
             height: 100vh;
             padding: 20px;
             text-align: center;
-            animation: fadeIn 2s ease-in-out;
         }
 
         .logo-container {
             position: relative;
             margin-bottom: 30px;
             cursor: pointer;
-            transition: transform 0.5s ease;
+            transition: all 0.5s ease;
         }
 
         .logo-container:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 0 20px #00ff00);
         }
 
         .logo {
@@ -60,8 +61,8 @@
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid #00ff00;
-            box-shadow: 0 0 20px #00ff00;
-            animation: pulse 4s infinite;
+            box-shadow: 0 0 30px #00ff00;
+            animation: pulse 4s infinite, rotate 20s linear infinite;
         }
 
         .stars {
@@ -70,6 +71,7 @@
             height: 100%;
             top: 0;
             left: 0;
+            pointer-events: none;
         }
 
         .star {
@@ -77,6 +79,7 @@
             background-color: #fff;
             border-radius: 50%;
             animation: twinkle 2s infinite;
+            pointer-events: none;
         }
 
         h1 {
@@ -84,6 +87,10 @@
             margin-bottom: 30px;
             text-shadow: 0 0 10px #00ff00;
             animation: glow 2s infinite alternate;
+            transform: perspective(500px) rotateX(20deg);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.2s;
         }
 
         .access-form {
@@ -91,118 +98,226 @@
             padding: 30px;
             border-radius: 10px;
             border: 2px solid #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
             margin-bottom: 30px;
-            animation: slideUp 1s ease-out;
+            animation: borderPulse 3s infinite;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease 0.4s;
+        }
+
+        .content-visible h1,
+        .content-visible .access-form {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         input[type="password"] {
             background-color: #000;
             color: #00ff00;
             border: 2px solid #00ff00;
-            padding: 10px 15px;
+            padding: 12px 20px;
             font-size: 16px;
             margin-right: 10px;
             border-radius: 5px;
             font-family: 'Orbitron', sans-serif;
             outline: none;
             transition: all 0.3s;
+            text-shadow: 0 0 5px #00ff00;
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
         input[type="password"]:focus {
-            box-shadow: 0 0 10px #00ff00;
+            box-shadow: 0 0 15px #00ff00, inset 0 0 10px rgba(0, 255, 0, 0.7);
+            transform: scale(1.05);
         }
 
         button {
-            background-color: #00ff00;
+            background: linear-gradient(45deg, #00ff00, #00cc00);
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
             font-family: 'Orbitron', sans-serif;
             transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+            position: relative;
+            overflow: hidden;
         }
 
         button:hover {
-            background-color: #00cc00;
-            transform: scale(1.05);
+            background: linear-gradient(45deg, #00cc00, #00ff00);
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.9);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            pointer-events: none;
+            transition: all 0.5s;
+        }
+
+        button:hover::after {
+            left: 100%;
         }
 
         #ipLogger {
             display: none;
-            background-color: rgba(10, 10, 30, 0.9);
-            padding: 20px;
+            background-color: rgba(10, 10, 30, 0.95);
+            padding: 25px;
             border-radius: 10px;
             border: 2px solid #ff0000;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
             margin-top: 20px;
-            max-width: 600px;
+            max-width: 800px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #ipLogger::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            animation: fadeIn 1s ease-in-out;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                transparent 48%, 
+                rgba(255, 0, 0, 0.1) 50%, 
+                transparent 52%);
+            background-size: 10px 10px;
+            pointer-events: none;
+            animation: scanlines 2s linear infinite;
         }
 
         #ipLogger h2 {
             color: #ff0000;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px #ff0000;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px #ff0000;
+            font-family: 'Press Start 2P', cursive;
+            position: relative;
+            animation: textGlitch 3s infinite;
         }
 
         .ip-info {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: left;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 5px;
-            border-left: 3px solid #ff0000;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            border-left: 4px solid #ff0000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ip-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 0, 0, 0.1), 
+                transparent);
+            pointer-events: none;
+        }
+
+        .ip-info p {
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .ip-info p::before {
+            content: '>';
+            position: absolute;
+            left: -20px;
+            color: #ff0000;
         }
 
         .map-container {
-            margin-top: 20px;
-            height: 300px;
+            margin-top: 25px;
+            height: 350px;
             position: relative;
             border: 2px solid #ff0000;
-            border-radius: 5px;
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
         }
 
         .x-mark {
             position: absolute;
             color: #ff0000;
-            font-size: 30px;
+            font-size: 40px;
             font-weight: bold;
-            text-shadow: 0 0 10px #ff0000;
+            text-shadow: 0 0 15px #ff0000;
             transform: translate(-50%, -50%);
-            animation: pulseRed 2s infinite;
+            animation: pulseRed 1.5s infinite, float 3s ease-in-out infinite;
+            z-index: 1000;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .admin-panel {
+            display: none;
+            margin-top: 30px;
+            background-color: rgba(0, 0, 50, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
         }
 
-        @keyframes slideUp {
-            from { 
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .admin-panel h3 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #00ffff;
         }
 
+        /* Animations */
         @keyframes pulse {
             0% { box-shadow: 0 0 20px #00ff00; }
             50% { box-shadow: 0 0 40px #00ff00; }
             100% { box-shadow: 0 0 20px #00ff00; }
         }
 
-        @keyframes pulseRed {
-            0% { text-shadow: 0 0 10px #ff0000; }
-            50% { text-shadow: 0 0 20px #ff0000; }
-            100% { text-shadow: 0 0 10px #ff0000; }
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0.2; transform: scale(0.8); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes borderPulse {
+            0% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.7); }
+            50% { box-shadow: 0 0 50px rgba(0, 255, 0, 0.9); }
+            100% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.7); }
         }
 
         @keyframes glow {
@@ -210,33 +325,107 @@
             to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
         }
 
-        @keyframes twinkle {
-            0% { opacity: 0.2; }
-            50% { opacity: 1; }
-            100% { opacity: 0.2; }
+        @keyframes pulseRed {
+            0% { text-shadow: 0 0 10px #ff0000; }
+            50% { text-shadow: 0 0 25px #ff0000; }
+            100% { text-shadow: 0 0 10px #ff0000; }
         }
 
-        .floating {
-            animation: floating 3s ease-in-out infinite;
+        @keyframes scanlines {
+            from { background-position: 0 0; }
+            to { background-position: 0 10px; }
         }
 
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
+        @keyframes textGlitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
         }
 
-        .hidden {
-            display: none;
+        /* Music controls */
+        .music-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 50px;
+            border: 1px solid #00ff00;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            transform: scale(0.9);
+            transition: all 0.3s;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.6s;
+        }
+
+        .content-visible .music-controls {
+            opacity: 1;
+        }
+
+        .music-controls:hover {
+            transform: scale(1);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.8);
+        }
+
+        .music-btn {
+            background: none;
+            border: none;
+            color: #00ff00;
+            font-size: 20px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .music-btn:hover {
+            background-color: rgba(0, 255, 0, 0.2);
+            transform: scale(1.1);
+        }
+
+        .volume-control {
+            width: 100px;
+            margin: 0 10px;
+            -webkit-appearance: none;
+            height: 5px;
+            background: #333;
+            outline: none;
+            border-radius: 5px;
+        }
+
+        .volume-control::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #00ff00;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <iframe id="video-bg" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&loop=1&controls=0&showinfo=0&mute=1&playlist=trELfLtJwDQ" frameborder="0" allow="autoplay"></iframe>
+    <!-- YouTube Background (hidden, used for audio) -->
+    <iframe id="youtube-audio" style="display: none;" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&loop=1&controls=0&showinfo=0&enablejsapi=1"></iframe>
 
-    <div class="container">
+    <!-- Video Background (visual only) -->
+    <div id="video-bg-container">
+        <iframe id="video-bg" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&loop=1&controls=0&showinfo=0&mute=1&playlist=trELfLtJwDQ" frameborder="0" allow="autoplay"></iframe>
+    </div>
+
+    <div class="container" id="mainContainer">
         <div class="logo-container" id="logoContainer">
-            <img src="https://i.imgur.com/5xrKblx.jpg" alt="Logo" class="logo floating">
+            <img src="https://i.imgur.com/5xrKblx.jpg" alt="Logo" class="logo">
             <div class="stars" id="starsContainer"></div>
         </div>
 
@@ -252,23 +441,42 @@
         </div>
 
         <div id="ipLogger">
-            <h2>IP LOGGER ACTIVATED</h2>
+            <h2>UNAUTHORIZED ACCESS DETECTED</h2>
             <div id="ipInfoContainer"></div>
             <div class="map-container" id="mapContainer">
                 <div class="x-mark">X</div>
             </div>
         </div>
+
+        <div class="admin-panel" id="adminPanel">
+            <h3>ADMIN PANEL</h3>
+            <div id="adminLogs"></div>
+            <button id="clearLogs">CLEAR LOGS</button>
+            <button id="exportLogs">EXPORT LOGS</button>
+        </div>
     </div>
 
+    <!-- Music Controls -->
+    <div class="music-controls">
+        <button class="music-btn" id="playBtn">▶</button>
+        <button class="music-btn" id="pauseBtn">❚❚</button>
+        <input type="range" min="0" max="100" value="50" class="volume-control" id="volumeControl">
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
+        // Initialize map variable
+        let map;
+        let marker;
+
         // Create stars
         const starsContainer = document.getElementById('starsContainer');
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 100; i++) {
             const star = document.createElement('div');
             star.classList.add('star');
 
             // Random size between 1px and 3px
-            const size = Math.random() * 2 + 1;
+            const size = Math.random() * 3 + 1;
             star.style.width = `${size}px`;
             star.style.height = `${size}px`;
 
@@ -278,13 +486,18 @@
 
             // Random animation delay
             star.style.animationDelay = `${Math.random() * 2}s`;
+            star.style.animationDuration = `${Math.random() * 2 + 1}s`;
 
             starsContainer.appendChild(star);
         }
 
-        // Handle logo click
+        // Handle logo click to reveal content
         document.getElementById('logoContainer').addEventListener('click', function() {
-            this.querySelector('.logo').classList.toggle('floating');
+            document.getElementById('mainContainer').classList.add('content-visible');
+            // Start music when logo is clicked
+            if (window.player) {
+                player.playVideo();
+            }
         });
 
         // Handle key submission
@@ -292,71 +505,233 @@
             const accessKey = document.getElementById('accessKey').value;
             const errorMsg = document.getElementById('errorMsg');
             const ipLogger = document.getElementById('ipLogger');
+            const adminPanel = document.getElementById('adminPanel');
 
             if (accessKey === "LEGLEGLEGLEGLEG") {
                 // Correct key - show IP logger
                 errorMsg.textContent = "";
                 ipLogger.style.display = "block";
+                ipLogger.querySelector('h2').textContent = "ACCESS GRANTED";
+                ipLogger.style.borderColor = "#00ff00";
+                ipLogger.style.boxShadow = "0 0 30px rgba(0, 255, 0, 0.7)";
                 document.getElementById('accessKey').value = "";
+                logIP(true);
+            } else if (accessKey === "leg5543") {
+                // Admin access
+                errorMsg.textContent = "";
+                ipLogger.style.display = "none";
+                adminPanel.style.display = "block";
+                document.getElementById('accessKey').value = "";
+                loadAdminLogs();
             } else {
                 // Wrong key - log IP and show error
                 errorMsg.textContent = "INVALID ACCESS KEY";
+                errorMsg.style.animation = "none";
+                void errorMsg.offsetWidth; // Trigger reflow
+                errorMsg.style.animation = "textGlitch 0.5s";
                 logIP(false);
             }
         });
 
-        // Function to log IP and computer name
-        function logIP(validKey) {
-            // Get IP address (this is a simplified version - in reality you'd need server-side code)
-            fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    const ip = data.ip;
+        // Function to log IP and computer name with geolocation
+        async function logIP(validKey) {
+            try {
+                // Get IP address
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                const ip = ipData.ip;
 
-                    // Get computer name (this will only work in some environments)
-                    const computerName = navigator.userAgent;
+                // Get geolocation data
+                let geoData = { city: "Unknown", region: "Unknown", country: "Unknown", loc: "0,0" };
+                try {
+                    const geoResponse = await fetch(`https://ipinfo.io/${ip}?token=YOUR_IPINFO_TOKEN`); // You need to get a free token from ipinfo.io
+                    geoData = await geoResponse.json();
+                } catch (e) {
+                    console.error("Geolocation error:", e);
+                }
 
-                    // Create log entry
-                    const logEntry = document.createElement('div');
-                    logEntry.className = 'ip-info';
-                    logEntry.innerHTML = `
-                        <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
-                        <p><strong>IP Address:</strong> ${ip}</p>
-                        <p><strong>Device Info:</strong> ${computerName}</p>
-                        <p><strong>Status:</strong> ${validKey ? 'VALID KEY' : 'INVALID KEY ATTEMPT'}</p>
-                    `;
+                // Get computer info
+                const computerName = navigator.userAgent;
+                const platform = navigator.platform;
+                const language = navigator.language;
+                const time = new Date().toLocaleString();
 
-                    // Add to container
-                    document.getElementById('ipInfoContainer').prepend(logEntry);
+                // Create log entry
+                const logEntry = document.createElement('div');
+                logEntry.className = 'ip-info';
+                logEntry.innerHTML = `
+                    <p><strong>Time:</strong> ${time}</p>
+                    <p><strong>IP Address:</strong> ${ip}</p>
+                    <p><strong>Location:</strong> ${geoData.city}, ${geoData.region}, ${geoData.country}</p>
+                    <p><strong>Coordinates:</strong> ${geoData.loc}</p>
+                    <p><strong>Device:</strong> ${platform} (${language})</p>
+                    <p><strong>User Agent:</strong> ${computerName}</p>
+                    <p><strong>Status:</strong> ${validKey ? '<span style="color:#00ff00">VALID KEY</span>' : '<span style="color:#ff0000">INVALID KEY ATTEMPT</span>'}</p>
+                `;
 
-                    // Show map (simulated)
-                    showMap(ip);
-                })
-                .catch(error => {
-                    console.error('Error fetching IP:', error);
+                // Add to container
+                document.getElementById('ipInfoContainer').prepend(logEntry);
+
+                // Show map with actual location if available
+                showMap(geoData.loc);
+
+                // Save to localStorage
+                saveLog({
+                    time,
+                    ip,
+                    location: `${geoData.city}, ${geoData.region}, ${geoData.country}`,
+                    coordinates: geoData.loc,
+                    device: `${platform} (${language})`,
+                    userAgent: computerName,
+                    status: validKey ? "VALID KEY" : "INVALID KEY ATTEMPT"
                 });
+
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+
+                // Fallback log entry if API calls fail
+                const logEntry = document.createElement('div');
+                logEntry.className = 'ip-info';
+                logEntry.innerHTML = `
+                    <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+                    <p><strong>IP Address:</strong> Error fetching IP</p>
+                    <p><strong>Device Info:</strong> ${navigator.userAgent}</p>
+                    <p><strong>Status:</strong> ${validKey ? '<span style="color:#00ff00">VALID KEY</span>' : '<span style="color:#ff0000">INVALID KEY ATTEMPT</span>'}</p>
+                `;
+                document.getElementById('ipInfoContainer').prepend(logEntry);
+            }
         }
 
-        // Function to show map (simulated)
-        function showMap(ip) {
+        // Function to show map with location
+        function showMap(coords) {
             const mapContainer = document.getElementById('mapContainer');
 
-            // In a real implementation, you would use a geolocation API
-            // This is just a simulation with a static map
-            mapContainer.style.backgroundImage = 'url(https://maps.googleapis.com/maps/api/staticmap?center=37.7749,-122.4194&zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C37.7749,-122.4194)';
-            mapContainer.style.backgroundSize = 'cover';
-            mapContainer.style.backgroundPosition = 'center';
+            // Clear previous map if exists
+            if (map) {
+                map.remove();
+            }
 
-            // Position the X mark randomly (simulating location)
-            const xMark = mapContainer.querySelector('.x-mark');
-            xMark.style.left = `${30 + Math.random() * 40}%`;
-            xMark.style.top = `${30 + Math.random() * 40}%`;
+            // Parse coordinates (format: "lat,lng")
+            const [lat, lng] = coords.split(',').map(Number);
+
+            // Initialize map
+            map = L.map(mapContainer).setView([lat || 37.7749, lng || -122.4194], 13);
+
+            // Add tile layer (OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Add marker
+            if (!isNaN(lat)) {
+                marker = L.marker([lat, lng]).addTo(map)
+                    .bindPopup("Approximate location");
+
+                // Position the X mark
+                const xMark = mapContainer.querySelector('.x-mark');
+                xMark.style.left = '50%';
+                xMark.style.top = '50%';
+            } else {
+                // Default to San Francisco if no coordinates
+                marker = L.marker([37.7749, -122.4194]).addTo(map)
+                    .bindPopup("Default location (no coordinates available)");
+            }
         }
 
-        // Initially log the IP when page loads
-        window.addEventListener('load', function() {
-            logIP(false);
+        // Save log to localStorage
+        function saveLog(logData) {
+            let logs = JSON.parse(localStorage.getItem('ipLoggerLogs') || []);
+            logs.unshift(logData); // Add new log to beginning
+            localStorage.setItem('ipLoggerLogs', JSON.stringify(logs));
+        }
+
+        // Load logs for admin panel
+        function loadAdminLogs() {
+            const logs = JSON.parse(localStorage.getItem('ipLoggerLogs') || []);
+            const adminLogs = document.getElementById('adminLogs');
+            adminLogs.innerHTML = '';
+
+            if (logs.length === 0) {
+                adminLogs.innerHTML = '<p>No logs available</p>';
+                return;
+            }
+
+            logs.forEach(log => {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'ip-info';
+                logEntry.innerHTML = `
+                    <p><strong>Time:</strong> ${log.time}</p>
+                    <p><strong>IP Address:</strong> ${log.ip}</p>
+                    <p><strong>Location:</strong> ${log.location}</p>
+                    <p><strong>Coordinates:</strong> ${log.coordinates}</p>
+                    <p><strong>Device:</strong> ${log.device}</p>
+                    <p><strong>Status:</strong> ${log.status === "VALID KEY" ? '<span style="color:#00ff00">VALID KEY</span>' : '<span style="color:#ff0000">INVALID KEY ATTEMPT</span>'}</p>
+                    <hr style="border-color:#00ffff; margin:10px 0; opacity:0.3;">
+                `;
+                adminLogs.appendChild(logEntry);
+            });
+        }
+
+        // Clear logs button
+        document.getElementById('clearLogs').addEventListener('click', function() {
+            localStorage.removeItem('ipLoggerLogs');
+            document.getElementById('adminLogs').innerHTML = '<p>Logs cleared</p>';
         });
+
+        // Export logs button
+        document.getElementById('exportLogs').addEventListener('click', function() {
+            const logs = JSON.parse(localStorage.getItem('ipLoggerLogs') || []);
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logs, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "ip_logs.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+        });
+
+        // Music controls
+        const youtubeAudio = document.getElementById('youtube-audio');
+        let player;
+
+        // Inject YouTube API script
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Global function needed by YouTube API
+        window.onYouTubeIframeAPIReady = function() {
+            player = new YT.Player('youtube-audio', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        };
+
+        function onPlayerReady(event) {
+            // Set initial volume
+            player.setVolume(50);
+
+            // Play/pause buttons
+            document.getElementById('playBtn').addEventListener('click', function() {
+                player.playVideo();
+            });
+
+            document.getElementById('pauseBtn').addEventListener('click', function() {
+                player.pauseVideo();
+            });
+
+            // Volume control
+            document.getElementById('volumeControl').addEventListener('input', function(e) {
+                player.setVolume(e.target.value);
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            // You can add more player state change handling here if needed
+        }
     </script>
 </body>
 </html>
