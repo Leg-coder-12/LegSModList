@@ -1,81 +1,362 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Key Access Site</title>
-<style>
-  body { font-family: Arial, sans-serif; background: #121212; color: #eee; text-align: center; padding: 2rem; }
-  #ipLoggerTab { display: none; margin-top: 2rem; background: #222; padding: 1rem; border-radius: 8px; max-width: 600px; margin-left: auto; margin-right: auto; }
-  #accessForm input[type="text"] { padding: 0.5rem; font-size: 1rem; }
-  #accessForm button { padding: 0.5rem 1rem; font-size: 1rem; margin-left: 0.5rem; }
-  textarea { width: 100%; height: 200px; background: #111; color: #0f0; padding: 1rem; border-radius: 5px; font-family: monospace; resize: none; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Access Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0a0a1a;
+            color: #00ff00;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .logo-container {
+            position: relative;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.1);
+        }
+
+        .logo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 20px #00ff00;
+            animation: pulse 4s infinite;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .star {
+            position: absolute;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: glow 2s infinite alternate;
+        }
+
+        .access-form {
+            background-color: rgba(10, 10, 30, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            margin-bottom: 30px;
+            animation: slideUp 1s ease-out;
+        }
+
+        input[type="password"] {
+            background-color: #000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 15px;
+            font-size: 16px;
+            margin-right: 10px;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="password"]:focus {
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        button {
+            background-color: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: #00cc00;
+            transform: scale(1.05);
+        }
+
+        #ipLogger {
+            display: none;
+            background-color: rgba(10, 10, 30, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            margin-top: 20px;
+            max-width: 600px;
+            width: 100%;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        #ipLogger h2 {
+            color: #ff0000;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .ip-info {
+            margin-bottom: 15px;
+            text-align: left;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            border-left: 3px solid #ff0000;
+        }
+
+        .map-container {
+            margin-top: 20px;
+            height: 300px;
+            position: relative;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .x-mark {
+            position: absolute;
+            color: #ff0000;
+            font-size: 30px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0000;
+            transform: translate(-50%, -50%);
+            animation: pulseRed 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 20px #00ff00; }
+            50% { box-shadow: 0 0 40px #00ff00; }
+            100% { box-shadow: 0 0 20px #00ff00; }
+        }
+
+        @keyframes pulseRed {
+            0% { text-shadow: 0 0 10px #ff0000; }
+            50% { text-shadow: 0 0 20px #ff0000; }
+            100% { text-shadow: 0 0 10px #ff0000; }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #00ff00; }
+            to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
+    <iframe id="video-bg" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&loop=1&controls=0&showinfo=0&mute=1&playlist=trELfLtJwDQ" frameborder="0" allow="autoplay"></iframe>
 
-<h1>Enter Access Key</h1>
-<form id="accessForm" onsubmit="return false;">
-  <input type="text" id="keyInput" placeholder="Enter key here" autocomplete="off" />
-  <button onclick="checkKey()">Submit</button>
-</form>
+    <div class="container">
+        <div class="logo-container" id="logoContainer">
+            <img src="https://i.imgur.com/5xrKblx.jpg" alt="Logo" class="logo floating">
+            <div class="stars" id="starsContainer"></div>
+        </div>
 
-<div id="ipLoggerTab">
-  <h2>IP Logger Tab (Authorized Access)</h2>
-  <textarea id="ipLogBox" readonly></textarea>
-</div>
+        <h1>SECURE ACCESS PORTAL</h1>
 
-<script>
-const correctKey = "LEGLEGLEGLEGLEG";
-const ipLogBox = document.getElementById('ipLogBox');
-const ipLoggerTab = document.getElementById('ipLoggerTab');
+        <div class="access-form">
+            <p>ENTER ACCESS KEY TO CONTINUE</p>
+            <div style="margin: 20px 0;">
+                <input type="password" id="accessKey" placeholder="Enter access key">
+                <button id="submitKey">SUBMIT</button>
+            </div>
+            <p id="errorMsg" style="color: #ff0000; height: 20px;"></p>
+        </div>
 
-function checkKey() {
-  const inputKey = document.getElementById('keyInput').value.trim();
-  if (inputKey === correctKey) {
-    alert("Access Granted!");
-    showIPLoggerTab();
-  } else {
-    alert("Access Denied! Your IP will be logged.");
-    logIPAndHostname();
-  }
-}
+        <div id="ipLogger">
+            <h2>IP LOGGER ACTIVATED</h2>
+            <div id="ipInfoContainer"></div>
+            <div class="map-container" id="mapContainer">
+                <div class="x-mark">X</div>
+            </div>
+        </div>
+    </div>
 
-// Show the IP Logger tab (only after correct key)
-function showIPLoggerTab() {
-  ipLoggerTab.style.display = 'block';
-  ipLogBox.value = "Welcome LEG! No IPs logged yet.";
-}
+    <script>
+        // Create stars
+        const starsContainer = document.getElementById('starsContainer');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
 
-// Log IP and Hostname for wrong keys
-async function logIPAndHostname() {
-  try {
-    // Get public IP via ipify API (free, no auth)
-    const res = await fetch('https://api.ipify.org?format=json');
-    const data = await res.json();
-    const ip = data.ip;
+            // Random size between 1px and 3px
+            const size = Math.random() * 2 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
 
-    // Hostname is NOT accessible via browser. We will just mark "Unknown Hostname"
-    const hostname = "Unknown Hostname (not accessible from browser)";
+            // Random position
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
 
-    // Display IP and hostname in ipLogBox - here for demo (this would be your own log on your end)
-    ipLogBox.value += `\nBlocked Access Attempt - IP: ${ip} - Hostname: ${hostname}`;
+            // Random animation delay
+            star.style.animationDelay = `${Math.random() * 2}s`;
 
-    // Show IP Logger tab (simulate your view)
-    ipLoggerTab.style.display = 'block';
+            starsContainer.appendChild(star);
+        }
 
-    // Here, you could send the IP and hostname to your own backend API for storage:
-    // await fetch('https://your-backend.com/log-ip', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ ip, hostname, time: new Date().toISOString() })
-    // });
+        // Handle logo click
+        document.getElementById('logoContainer').addEventListener('click', function() {
+            this.querySelector('.logo').classList.toggle('floating');
+        });
 
-  } catch (e) {
-    console.error("Failed to get IP", e);
-  }
-}
-</script>
+        // Handle key submission
+        document.getElementById('submitKey').addEventListener('click', function() {
+            const accessKey = document.getElementById('accessKey').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const ipLogger = document.getElementById('ipLogger');
 
+            if (accessKey === "LEGLEGLEGLEGLEG") {
+                // Correct key - show IP logger
+                errorMsg.textContent = "";
+                ipLogger.style.display = "block";
+                document.getElementById('accessKey').value = "";
+            } else {
+                // Wrong key - log IP and show error
+                errorMsg.textContent = "INVALID ACCESS KEY";
+                logIP(false);
+            }
+        });
+
+        // Function to log IP and computer name
+        function logIP(validKey) {
+            // Get IP address (this is a simplified version - in reality you'd need server-side code)
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    const ip = data.ip;
+
+                    // Get computer name (this will only work in some environments)
+                    const computerName = navigator.userAgent;
+
+                    // Create log entry
+                    const logEntry = document.createElement('div');
+                    logEntry.className = 'ip-info';
+                    logEntry.innerHTML = `
+                        <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+                        <p><strong>IP Address:</strong> ${ip}</p>
+                        <p><strong>Device Info:</strong> ${computerName}</p>
+                        <p><strong>Status:</strong> ${validKey ? 'VALID KEY' : 'INVALID KEY ATTEMPT'}</p>
+                    `;
+
+                    // Add to container
+                    document.getElementById('ipInfoContainer').prepend(logEntry);
+
+                    // Show map (simulated)
+                    showMap(ip);
+                })
+                .catch(error => {
+                    console.error('Error fetching IP:', error);
+                });
+        }
+
+        // Function to show map (simulated)
+        function showMap(ip) {
+            const mapContainer = document.getElementById('mapContainer');
+
+            // In a real implementation, you would use a geolocation API
+            // This is just a simulation with a static map
+            mapContainer.style.backgroundImage = 'url(https://maps.googleapis.com/maps/api/staticmap?center=37.7749,-122.4194&zoom=13&size=600x300&maptype=roadmap&markers=color:red%7C37.7749,-122.4194)';
+            mapContainer.style.backgroundSize = 'cover';
+            mapContainer.style.backgroundPosition = 'center';
+
+            // Position the X mark randomly (simulating location)
+            const xMark = mapContainer.querySelector('.x-mark');
+            xMark.style.left = `${30 + Math.random() * 40}%`;
+            xMark.style.top = `${30 + Math.random() * 40}%`;
+        }
+
+        // Initially log the IP when page loads
+        window.addEventListener('load', function() {
+            logIP(false);
+        });
+    </script>
 </body>
 </html>
