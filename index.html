@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Access Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <title>SECURE ACCESS</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -14,25 +13,38 @@
         }
 
         body {
-            font-family: 'Orbitron', sans-serif;
-            background-color: #0a0a1a;
-            color: #00ff00;
+            font-family: 'VT323', monospace;
+            background-color: #000;
+            color: #fff;
             height: 100vh;
             overflow: hidden;
             position: relative;
+            filter: grayscale(100%) contrast(120%);
         }
 
-        #video-bg {
+        /* Background creepy text */
+        .bg-text {
+            position: fixed;
+            opacity: 0.1;
+            font-size: 2rem;
+            color: #fff;
+            z-index: -1;
+            user-select: none;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        /* YouTube audio (hidden) */
+        #youtube-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            opacity: 0.2;
-            z-index: -1;
+            opacity: 0;
+            z-index: -2;
         }
 
+        /* Main container */
         .container {
             display: flex;
             flex-direction: column;
@@ -41,697 +53,451 @@
             height: 100vh;
             padding: 20px;
             text-align: center;
-        }
-
-        .logo-container {
-            position: relative;
-            margin-bottom: 30px;
-            cursor: pointer;
-            transition: all 0.5s ease;
-        }
-
-        .logo-container:hover {
-            transform: scale(1.1) rotate(5deg);
-            filter: drop-shadow(0 0 20px #00ff00);
-        }
-
-        .logo {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #00ff00;
-            box-shadow: 0 0 30px #00ff00;
-            animation: pulse 4s infinite, rotate 20s linear infinite;
-        }
-
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-        }
-
-        .star {
-            position: absolute;
-            background-color: #fff;
-            border-radius: 50%;
-            animation: twinkle 2s infinite;
-            pointer-events: none;
-        }
-
-        h1 {
-            font-family: 'Press Start 2P', cursive;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px #00ff00;
-            animation: glow 2s infinite alternate;
-            transform: perspective(500px) rotateX(20deg);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease 0.2s;
-        }
-
-        .access-form {
-            background-color: rgba(10, 10, 30, 0.8);
-            padding: 30px;
-            border-radius: 10px;
-            border: 2px solid #00ff00;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
-            margin-bottom: 30px;
-            animation: borderPulse 3s infinite;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease 0.4s;
-        }
-
-        .content-visible h1,
-        .content-visible .access-form {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        input[type="password"] {
-            background-color: #000;
-            color: #00ff00;
-            border: 2px solid #00ff00;
-            padding: 12px 20px;
-            font-size: 16px;
-            margin-right: 10px;
-            border-radius: 5px;
-            font-family: 'Orbitron', sans-serif;
-            outline: none;
-            transition: all 0.3s;
-            text-shadow: 0 0 5px #00ff00;
-            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.5);
-        }
-
-        input[type="password"]:focus {
-            box-shadow: 0 0 15px #00ff00, inset 0 0 10px rgba(0, 255, 0, 0.7);
-            transform: scale(1.05);
-        }
-
-        button {
-            background: linear-gradient(45deg, #00ff00, #00cc00);
-            color: #000;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
-            position: relative;
-            overflow: hidden;
-        }
-
-        button:hover {
-            background: linear-gradient(45deg, #00cc00, #00ff00);
-            transform: scale(1.05) translateY(-3px);
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.9);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(45deg);
-            pointer-events: none;
             transition: all 0.5s;
         }
 
-        button:hover::after {
-            left: 100%;
-        }
-
-        #ipLogger {
-            display: none;
-            background-color: rgba(10, 10, 30, 0.95);
-            padding: 25px;
-            border-radius: 10px;
-            border: 2px solid #ff0000;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.7);
-            margin-top: 20px;
-            max-width: 800px;
-            width: 90%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #ipLogger::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, 
-                transparent 48%, 
-                rgba(255, 0, 0, 0.1) 50%, 
-                transparent 52%);
-            background-size: 10px 10px;
-            pointer-events: none;
-            animation: scanlines 2s linear infinite;
-        }
-
-        #ipLogger h2 {
-            color: #ff0000;
-            margin-bottom: 20px;
-            text-shadow: 0 0 15px #ff0000;
-            font-family: 'Press Start 2P', cursive;
-            position: relative;
-            animation: textGlitch 3s infinite;
-        }
-
-        .ip-info {
-            margin-bottom: 20px;
-            text-align: left;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 8px;
-            border-left: 4px solid #ff0000;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ip-info::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 0, 0, 0.1), 
-                transparent);
-            pointer-events: none;
-        }
-
-        .ip-info p {
-            margin-bottom: 8px;
-            position: relative;
-        }
-
-        .ip-info p::before {
-            content: '>';
-            position: absolute;
-            left: -20px;
-            color: #ff0000;
-        }
-
-        .map-container {
-            margin-top: 25px;
-            height: 350px;
-            position: relative;
-            border: 2px solid #ff0000;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-        }
-
-        .x-mark {
-            position: absolute;
-            color: #ff0000;
-            font-size: 40px;
-            font-weight: bold;
-            text-shadow: 0 0 15px #ff0000;
-            transform: translate(-50%, -50%);
-            animation: pulseRed 1.5s infinite, float 3s ease-in-out infinite;
-            z-index: 1000;
-        }
-
-        .admin-panel {
-            display: none;
-            margin-top: 30px;
-            background-color: rgba(0, 0, 50, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #00ffff;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.7);
-        }
-
-        .admin-panel h3 {
-            color: #00ffff;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px #00ffff;
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 20px #00ff00; }
-            50% { box-shadow: 0 0 40px #00ff00; }
-            100% { box-shadow: 0 0 20px #00ff00; }
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes twinkle {
-            0% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0.2; transform: scale(0.8); }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
-        @keyframes borderPulse {
-            0% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.7); }
-            50% { box-shadow: 0 0 50px rgba(0, 255, 0, 0.9); }
-            100% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.7); }
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 10px #00ff00; }
-            to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
-        }
-
-        @keyframes pulseRed {
-            0% { text-shadow: 0 0 10px #ff0000; }
-            50% { text-shadow: 0 0 25px #ff0000; }
-            100% { text-shadow: 0 0 10px #ff0000; }
-        }
-
-        @keyframes scanlines {
-            from { background-position: 0 0; }
-            to { background-position: 0 10px; }
-        }
-
-        @keyframes textGlitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        /* Music controls */
-        .music-controls {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 100;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 50px;
-            border: 1px solid #00ff00;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-            transform: scale(0.9);
-            transition: all 0.3s;
-            opacity: 0;
-            transition: opacity 0.5s ease 0.6s;
-        }
-
-        .content-visible .music-controls {
-            opacity: 1;
-        }
-
-        .music-controls:hover {
-            transform: scale(1);
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.8);
-        }
-
-        .music-btn {
-            background: none;
-            border: none;
-            color: #00ff00;
-            font-size: 20px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
+        /* Logo (rotating images) */
+        .logo {
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 0 20px #fff;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: pulse 3s infinite;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px #fff;
+        }
+
+        /* Title */
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #fff;
+            letter-spacing: 2px;
+            font-size: 1.8rem;
+        }
+
+        /* Input box */
+        .input-box {
+            margin: 20px 0;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        input[type="password"] {
+            background: #000;
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            font-family: 'VT323', monospace;
+            outline: none;
+            width: 220px;
+            text-align: center;
+            border-radius: 25px;
             transition: all 0.3s;
         }
 
-        .music-btn:hover {
-            background-color: rgba(0, 255, 0, 0.2);
-            transform: scale(1.1);
+        input[type="password"]:focus {
+            box-shadow: 0 0 15px #fff;
         }
 
-        .volume-control {
-            width: 100px;
-            margin: 0 10px;
-            -webkit-appearance: none;
-            height: 5px;
-            background: #333;
-            outline: none;
-            border-radius: 5px;
-        }
-
-        .volume-control::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #00ff00;
+        button {
+            background: #000;
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            font-family: 'VT323', monospace;
             cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s;
+            border-radius: 25px;
         }
+
+        button:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Error message */
+        #error-msg {
+            color: #ff0000;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            height: 30px;
+            text-shadow: 0 0 5px #ff0000;
+        }
+
+        /* IP Logger Panel (hidden by default) */
+        #ip-logger {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            padding: 25px;
+            width: 80%;
+            max-width: 600px;
+            z-index: 100;
+            box-shadow: 0 0 30px #00ff00;
+            border-radius: 15px;
+        }
+
+        #ip-logger h2 {
+            color: #00ff00;
+            margin-bottom: 15px;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        #user-info {
+            text-align: left;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        #ip-logger button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            margin-top: 10px;
+        }
+
+        /* Admin Panel (hidden by default) */
+        #admin-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff0000;
+            padding: 25px;
+            width: 80%;
+            max-width: 600px;
+            z-index: 100;
+            box-shadow: 0 0 30px #ff0000;
+            border-radius: 15px;
+        }
+
+        #admin-panel h2 {
+            color: #ff0000;
+            margin-bottom: 15px;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        #logged-data {
+            text-align: left;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        #webcam-feed {
+            width: 100%;
+            height: 250px;
+            background: #000;
+            border: 2px solid #ff0000;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #close-admin {
+            background: #ff0000;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+            border-radius: 25px;
+        }
+
+        /* Glitch effect */
+        .glitch {
+            animation: glitch 0.5s infinite;
+            filter: drop-shadow(0 0 10px #ff0000);
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-5px, 5px); }
+            40% { transform: translate(-5px, -5px); }
+            60% { transform: translate(5px, 5px); }
+            80% { transform: translate(5px, -5px); }
+            100% { transform: translate(0); }
+        }
+
+        /* Screen shake */
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0); }
+            10% { transform: translate(-10px, 0); }
+            20% { transform: translate(10px, 0); }
+            30% { transform: translate(-10px, 0); }
+            40% { transform: translate(10px, 0); }
+            50% { transform: translate(-10px, 0); }
+            60% { transform: translate(10px, 0); }
+            70% { transform: translate(-10px, 0); }
+            80% { transform: translate(10px, 0); }
+            90% { transform: translate(-10px, 0); }
+            100% { transform: translate(0); }
+        }
+
+        /* Logo pulse animation */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 10px #fff; }
+            50% { box-shadow: 0 0 30px #fff; }
+            100% { box-shadow: 0 0 10px #fff; }
+        }
+
+        /* Rotating images in logo */
+        @keyframes changeImage {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            20% { opacity: 1; }
+            30% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        .logo-img {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            opacity: 0;
+            animation: changeImage 20s infinite;
+        }
+
+        .logo-img:nth-child(1) { animation-delay: 0s; }
+        .logo-img:nth-child(2) { animation-delay: 4s; }
+        .logo-img:nth-child(3) { animation-delay: 8s; }
+        .logo-img:nth-child(4) { animation-delay: 12s; }
+        .logo-img:nth-child(5) { animation-delay: 16s; }
     </style>
 </head>
 <body>
-    <!-- YouTube Background (hidden, used for audio) -->
-    <iframe id="youtube-audio" style="display: none;" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&loop=1&controls=0&showinfo=0&enablejsapi=1"></iframe>
+    <!-- Background creepy text -->
+    <div class="bg-text" style="top: 10%; left: 5%;">危害国家</div>
+    <div class="bg-text" style="top: 20%; left: 70%;">危険</div>
+    <div class="bg-text" style="top: 50%; left: 30%;">Diddy Blud 67 Took Your IP</div>
+    <div class="bg-text" style="top: 80%; left: 60%;">tsixe</div>
+    <div class="bg-text" style="top: 40%; left: 20%;">Harm Nation</div>
+    <div class="bg-text" style="top: 70%; left: 10%;">あなたは監視されています</div>
 
-    <!-- Video Background (visual only) -->
-    <div id="video-bg-container">
-        <iframe id="video-bg" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&loop=1&controls=0&showinfo=0&mute=1&playlist=trELfLtJwDQ" frameborder="0" allow="autoplay"></iframe>
+    <!-- YouTube audio (hidden, autoplay) -->
+    <iframe id="youtube-bg" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&loop=1&mute=0&controls=0&disablekb=1&modestbranding=1&rel=0&showinfo=0"></iframe>
+
+    <!-- Main content -->
+    <div class="container" id="main-container">
+        <div style="position: relative; width: 180px; height: 180px;">
+            <img src="https://i.imgur.com/5xrKblx.jpg" class="logo-img">
+            <img src="https://i.imgur.com/xxnnVSQ.jpg" class="logo-img">
+            <img src="https://i.imgur.com/P6hMiT1.jpg" class="logo-img">
+            <img src="https://i.imgur.com/Lx2vPoy.jpg" class="logo-img">
+            <img src="https://i.imgur.com/waozfgz.jpg" class="logo-img">
+        </div>
+
+        <h1>SECURE ACCESS</h1>
+        <p>ENTER CODE TO CONTINUE</p>
+
+        <div class="input-box">
+            <input type="password" id="code-input" placeholder="Enter code">
+            <button id="submit-btn">SUBMIT</button>
+        </div>
+
+        <div id="error-msg"></div>
     </div>
 
-    <div class="container" id="mainContainer">
-        <div class="logo-container" id="logoContainer">
-            <img src="https://i.imgur.com/5xrKblx.jpg" alt="Logo" class="logo">
-            <div class="stars" id="starsContainer"></div>
+    <!-- IP Logger Panel (hidden) -->
+    <div id="ip-logger">
+        <h2>IP LOGGER ACTIVATED</h2>
+        <div id="user-info">
+            <p><strong>IP:</strong> <span id="ip-address">Loading...</span></p>
+            <p><strong>Location:</strong> <span id="user-location">Loading...</span></p>
+            <p><strong>Device:</strong> <span id="device-info">Loading...</span></p>
+            <p><strong>Windows User:</strong> <span id="windows-user">Unknown</span></p>
         </div>
-
-        <h1>SECURE ACCESS PORTAL</h1>
-
-        <div class="access-form">
-            <p>ENTER ACCESS KEY TO CONTINUE</p>
-            <div style="margin: 20px 0;">
-                <input type="password" id="accessKey" placeholder="Enter access key">
-                <button id="submitKey">SUBMIT</button>
-            </div>
-            <p id="errorMsg" style="color: #ff0000; height: 20px;"></p>
-        </div>
-
-        <div id="ipLogger">
-            <h2>UNAUTHORIZED ACCESS DETECTED</h2>
-            <div id="ipInfoContainer"></div>
-            <div class="map-container" id="mapContainer">
-                <div class="x-mark">X</div>
-            </div>
-        </div>
-
-        <div class="admin-panel" id="adminPanel">
-            <h3>ADMIN PANEL</h3>
-            <div id="adminLogs"></div>
-            <button id="clearLogs">CLEAR LOGS</button>
-            <button id="exportLogs">EXPORT LOGS</button>
-        </div>
+        <button id="close-logger">CLOSE</button>
     </div>
 
-    <!-- Music Controls -->
-    <div class="music-controls">
-        <button class="music-btn" id="playBtn">▶</button>
-        <button class="music-btn" id="pauseBtn">❚❚</button>
-        <input type="range" min="0" max="100" value="50" class="volume-control" id="volumeControl">
+    <!-- Admin Panel (hidden) -->
+    <div id="admin-panel">
+        <h2>ADMIN PANEL</h2>
+        <div id="logged-data">
+            <p><strong>Logged IPs:</strong></p>
+            <div id="ip-list"></div>
+        </div>
+
+        <div id="webcam-feed">
+            <p style="color: #ff0000; text-align: center;">[WEBCAM FEED: ACCESS DENIED]</p>
+        </div>
+
+        <button id="close-admin">CLOSE</button>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Audio for static noise -->
+    <audio id="static-noise" src="https://assets.mixkit.co/sfx/preview/mixkit-static-radio-1668.mp3" preload="auto"></audio>
+
     <script>
-        // Initialize map variable
-        let map;
-        let marker;
+        // Background music autoplay (YouTube)
+        document.addEventListener('DOMContentLoaded', () => {
+            const youtubeBg = document.getElementById('youtube-bg');
+            youtubeBg.src += "&playlist=trELfLtJwDQ";
+        });
 
-        // Create stars
-        const starsContainer = document.getElementById('starsContainer');
-        for (let i = 0; i < 100; i++) {
-            const star = document.createElement('div');
-            star.classList.add('star');
+        // Submit button
+        document.getElementById('submit-btn').addEventListener('click', checkCode);
+        document.getElementById('code-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkCode();
+        });
 
-            // Random size between 1px and 3px
-            const size = Math.random() * 3 + 1;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
+        // Static noise
+        const staticNoise = document.getElementById('static-noise');
+        let loggedIPs = [];
 
-            // Random position
-            star.style.left = `${Math.random() * 100}%`;
-            star.style.top = `${Math.random() * 100}%`;
+        // Check code
+        function checkCode() {
+            const code = document.getElementById('code-input').value;
+            const errorMsg = document.getElementById('error-msg');
+            const mainContainer = document.getElementById('main-container');
 
-            // Random animation delay
-            star.style.animationDelay = `${Math.random() * 2}s`;
-            star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+            if (code === "leg") {
+                // Correct code - show IP logger
+                errorMsg.textContent = "";
+                logUserInfo();
+                document.getElementById('ip-logger').style.display = "block";
+            } 
+            else if (code === "tsixe") {
+                // Admin code (glitch effect)
+                mainContainer.classList.add('glitch');
+                setTimeout(() => {
+                    mainContainer.classList.remove('glitch');
+                    showAdminPanel();
+                }, 1000);
+            }
+            else {
+                // Wrong code (scary effect)
+                errorMsg.textContent = "INTRUDER DETECTED";
+                mainContainer.classList.add('shake');
+                staticNoise.play();
 
-            starsContainer.appendChild(star);
+                // Log user info
+                logUserInfo();
+
+                // Reset after animation
+                setTimeout(() => {
+                    mainContainer.classList.remove('shake');
+                }, 500);
+            }
         }
 
-        // Handle logo click to reveal content
-        document.getElementById('logoContainer').addEventListener('click', function() {
-            document.getElementById('mainContainer').classList.add('content-visible');
-            // Start music when logo is clicked
-            if (window.player) {
-                player.playVideo();
-            }
-        });
-
-        // Handle key submission
-        document.getElementById('submitKey').addEventListener('click', function() {
-            const accessKey = document.getElementById('accessKey').value;
-            const errorMsg = document.getElementById('errorMsg');
-            const ipLogger = document.getElementById('ipLogger');
-            const adminPanel = document.getElementById('adminPanel');
-
-            if (accessKey === "LEGLEGLEGLEGLEG") {
-                // Correct key - show IP logger
-                errorMsg.textContent = "";
-                ipLogger.style.display = "block";
-                ipLogger.querySelector('h2').textContent = "ACCESS GRANTED";
-                ipLogger.style.borderColor = "#00ff00";
-                ipLogger.style.boxShadow = "0 0 30px rgba(0, 255, 0, 0.7)";
-                document.getElementById('accessKey').value = "";
-                logIP(true);
-            } else if (accessKey === "leg5543") {
-                // Admin access
-                errorMsg.textContent = "";
-                ipLogger.style.display = "none";
-                adminPanel.style.display = "block";
-                document.getElementById('accessKey').value = "";
-                loadAdminLogs();
-            } else {
-                // Wrong key - log IP and show error
-                errorMsg.textContent = "INVALID ACCESS KEY";
-                errorMsg.style.animation = "none";
-                void errorMsg.offsetWidth; // Trigger reflow
-                errorMsg.style.animation = "textGlitch 0.5s";
-                logIP(false);
-            }
-        });
-
-        // Function to log IP and computer name with geolocation
-        async function logIP(validKey) {
+        // Log user info
+        async function logUserInfo() {
             try {
-                // Get IP address
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipResponse.json();
+                // Get IP
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
                 const ip = ipData.ip;
 
-                // Get geolocation data
-                let geoData = { city: "Unknown", region: "Unknown", country: "Unknown", loc: "0,0" };
+                // Get location (approximate)
+                let location = "Unknown";
                 try {
-                    const geoResponse = await fetch(`https://ipinfo.io/${ip}?token=YOUR_IPINFO_TOKEN`); // You need to get a free token from ipinfo.io
-                    geoData = await geoResponse.json();
+                    const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
+                    const geoData = await geoRes.json();
+                    location = `${geoData.city}, ${geoData.country_name}`;
                 } catch (e) {
-                    console.error("Geolocation error:", e);
+                    console.error("Geo error:", e);
                 }
 
-                // Get computer info
-                const computerName = navigator.userAgent;
-                const platform = navigator.platform;
-                const language = navigator.language;
-                const time = new Date().toLocaleString();
+                // Get device info
+                const deviceInfo = navigator.userAgent;
 
-                // Create log entry
-                const logEntry = document.createElement('div');
-                logEntry.className = 'ip-info';
-                logEntry.innerHTML = `
-                    <p><strong>Time:</strong> ${time}</p>
-                    <p><strong>IP Address:</strong> ${ip}</p>
-                    <p><strong>Location:</strong> ${geoData.city}, ${geoData.region}, ${geoData.country}</p>
-                    <p><strong>Coordinates:</strong> ${geoData.loc}</p>
-                    <p><strong>Device:</strong> ${platform} (${language})</p>
-                    <p><strong>User Agent:</strong> ${computerName}</p>
-                    <p><strong>Status:</strong> ${validKey ? '<span style="color:#00ff00">VALID KEY</span>' : '<span style="color:#ff0000">INVALID KEY ATTEMPT</span>'}</p>
-                `;
+                // Update IP logger panel
+                document.getElementById('ip-address').textContent = ip;
+                document.getElementById('user-location').textContent = location;
+                document.getElementById('device-info').textContent = deviceInfo;
 
-                // Add to container
-                document.getElementById('ipInfoContainer').prepend(logEntry);
-
-                // Show map with actual location if available
-                showMap(geoData.loc);
-
-                // Save to localStorage
-                saveLog({
-                    time,
-                    ip,
-                    location: `${geoData.city}, ${geoData.region}, ${geoData.country}`,
-                    coordinates: geoData.loc,
-                    device: `${platform} (${language})`,
-                    userAgent: computerName,
-                    status: validKey ? "VALID KEY" : "INVALID KEY ATTEMPT"
-                });
-
-            } catch (error) {
-                console.error('Error fetching IP:', error);
-
-                // Fallback log entry if API calls fail
-                const logEntry = document.createElement('div');
-                logEntry.className = 'ip-info';
-                logEntry.innerHTML = `
-                    <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
-                    <p><strong>IP Address:</strong> Error fetching IP</p>
-                    <p><strong>Device Info:</strong> ${navigator.userAgent}</p>
-                    <p><strong>Status:</strong> ${validKey ? '<span style="color:#00ff00">VALID KEY</span>' : '<span style="color:#ff0000">INVALID KEY ATTEMPT</span>'}</p>
-                `;
-                document.getElementById('ipInfoContainer').prepend(logEntry);
-            }
-        }
-
-        // Function to show map with location
-        function showMap(coords) {
-            const mapContainer = document.getElementById('mapContainer');
-
-            // Clear previous map if exists
-            if (map) {
-                map.remove();
-            }
-
-            // Parse coordinates (format: "lat,lng")
-            const [lat, lng] = coords.split(',').map(Number);
-
-            // Initialize map
-            map = L.map(mapContainer).setView([lat || 37.7749, lng || -122.4194], 13);
-
-            // Add tile layer (OpenStreetMap)
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            // Add marker
-            if (!isNaN(lat)) {
-                marker = L.marker([lat, lng]).addTo(map)
-                    .bindPopup("Approximate location");
-
-                // Position the X mark
-                const xMark = mapContainer.querySelector('.x-mark');
-                xMark.style.left = '50%';
-                xMark.style.top = '50%';
-            } else {
-                // Default to San Francisco if no coordinates
-                marker = L.marker([37.7749, -122.4194]).addTo(map)
-                    .bindPopup("Default location (no coordinates available)");
-            }
-        }
-
-        // Save log to localStorage
-        function saveLog(logData) {
-            let logs = JSON.parse(localStorage.getItem('ipLoggerLogs') || []);
-            logs.unshift(logData); // Add new log to beginning
-            localStorage.setItem('ipLoggerLogs', JSON.stringify(logs));
-        }
-
-        // Load logs for admin panel
-        function loadAdminLogs() {
-            const logs = JSON.parse(localStorage.getItem('ipLoggerLogs') || []);
-            const adminLogs = document.getElementById('adminLogs');
-            adminLogs.innerHTML = '';
-
-            if (logs.length === 0) {
-                adminLogs.innerHTML = '<p>No logs available</p>';
-                return;
-            }
-
-            logs.forEach(log => {
-                const logEntry = document.createElement('div');
-                logEntry.className = 'ip-info';
-                logEntry.innerHTML = `
-                    <p><strong>Time:</strong> ${log.time}</p>
-                    <p><strong>IP Address:</strong> ${log.ip}</p>
-                    <p><strong>Location:</strong> ${log.location}</p>
-                    <p><strong>Coordinates:</strong> ${log.coordinates}</p>
-                    <p><strong>Device:</strong> ${log.device}</p>
-                    <p><strong>Status:</strong> ${log.status === "VALID KEY" ? '<span style="color:#00ff00">VALID KEY</span>' : '<span style="color:#ff0000">INVALID KEY ATTEMPT</span>'}</p>
-                    <hr style="border-color:#00ffff; margin:10px 0; opacity:0.3;">
-                `;
-                adminLogs.appendChild(logEntry);
-            });
-        }
-
-        // Clear logs button
-        document.getElementById('clearLogs').addEventListener('click', function() {
-            localStorage.removeItem('ipLoggerLogs');
-            document.getElementById('adminLogs').innerHTML = '<p>Logs cleared</p>';
-        });
-
-        // Export logs button
-        document.getElementById('exportLogs').addEventListener('click', function() {
-            const logs = JSON.parse(localStorage.getItem('ipLoggerLogs') || []);
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logs, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "ip_logs.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            document.body.removeChild(downloadAnchor);
-        });
-
-        // Music controls
-        const youtubeAudio = document.getElementById('youtube-audio');
-        let player;
-
-        // Inject YouTube API script
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        // Global function needed by YouTube API
-        window.onYouTubeIframeAPIReady = function() {
-            player = new YT.Player('youtube-audio', {
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                // Try to get Windows username (simulated)
+                try {
+                    const winUser = "User-" + Math.floor(Math.random() * 1000);
+                    document.getElementById('windows-user').textContent = winUser;
+                } catch (e) {
+                    console.error("Windows user error:", e);
                 }
-            });
-        };
 
-        function onPlayerReady(event) {
-            // Set initial volume
-            player.setVolume(50);
+                // Add to logged IPs
+                loggedIPs.push({ ip, location, deviceInfo });
+                updateAdminPanel();
 
-            // Play/pause buttons
-            document.getElementById('playBtn').addEventListener('click', function() {
-                player.playVideo();
-            });
+            } catch (err) {
+                console.error("Error logging user:", err);
+            }
+        }
 
-            document.getElementById('pauseBtn').addEventListener('click', function() {
-                player.pauseVideo();
-            });
+        // Update admin panel with logged IPs
+        function updateAdminPanel() {
+            const ipList = document.getElementById('ip-list');
+            ipList.innerHTML = "";
 
-            // Volume control
-            document.getElementById('volumeControl').addEventListener('input', function(e) {
-                player.setVolume(e.target.value);
+            loggedIPs.forEach((entry, index) => {
+                const entryElement = document.createElement('div');
+                entryElement.style.marginBottom = "10px";
+                entryElement.style.padding = "10px";
+                entryElement.style.borderBottom = "1px solid #ff0000";
+                entryElement.innerHTML = `
+                    <p><strong>#${index + 1}:</strong> ${entry.ip}</p>
+                    <p><strong>Location:</strong> ${entry.location}</p>
+                    <p><strong>Device:</strong> ${entry.deviceInfo}</p>
+                `;
+                ipList.appendChild(entryElement);
             });
         }
 
-        function onPlayerStateChange(event) {
-            // You can add more player state change handling here if needed
+        // Show admin panel
+        function showAdminPanel() {
+            document.getElementById('admin-panel').style.display = "block";
         }
+
+        // Close IP logger
+        document.getElementById('close-logger').addEventListener('click', () => {
+            document.getElementById('ip-logger').style.display = "none";
+        });
+
+        // Close admin panel
+        document.getElementById('close-admin').addEventListener('click', () => {
+            document.getElementById('admin-panel').style.display = "none";
+        });
+
+        // Simulate webcam access (real access requires user permission)
+        function simulateWebcam() {
+            const webcamFeed = document.getElementById('webcam-feed');
+            webcamFeed.innerHTML = `<p style="color: #ff0000; text-align: center; margin-top: 100px;">[WEBCAM FEED: ACCESS DENIED]</p>`;
+        }
+
+        // Initialize
+        simulateWebcam();
     </script>
 </body>
 </html>
