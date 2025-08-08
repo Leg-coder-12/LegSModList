@@ -3,501 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SECURE ACCESS</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>Secure Portal</title>
     <style>
-        * {
+        @import url('https://fonts.googleapis.com/css2?family=VT323&family=Creepster&display=swap');
+        
+        :root {
+            --calm-bg: #0a192f;
+            --calm-text: #64ffda;
+            --scary-bg: #000;
+            --scary-text: #ff0000;
+        }
+        
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
+            background-color: var(--calm-bg);
+            color: var(--calm-text);
             font-family: 'VT323', monospace;
-            background-color: #000;
-            color: #fff;
-            height: 100vh;
             overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             position: relative;
-            filter: grayscale(100%) contrast(120%);
+            transition: all 1s ease;
         }
-
-        /* Background creepy text */
-        .bg-text {
-            position: fixed;
-            opacity: 0.1;
-            font-size: 2rem;
-            color: #fff;
-            z-index: -1;
-            user-select: none;
-            text-shadow: 0 0 10px #ff0000;
+        
+        body.scary-mode {
+            background-color: var(--scary-bg);
+            color: var(--scary-text);
         }
-
-        /* YouTube audio (hidden) */
-        #youtube-bg {
+        
+        .video-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0;
             z-index: -2;
+            opacity: 0.3;
+            transition: opacity 1s ease;
         }
-
-        /* Main container */
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.5s;
-        }
-
-        /* Logo (rotating images) */
-        .logo {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #fff;
-            box-shadow: 0 0 20px #fff;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            animation: pulse 3s infinite;
-        }
-
-        .logo:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px #fff;
-        }
-
-        /* Title */
-        h1 {
-            font-family: 'Press Start 2P', cursive;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #fff;
-            letter-spacing: 2px;
-            font-size: 1.8rem;
-        }
-
-        /* Input box */
-        .input-box {
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        input[type="password"] {
-            background: #000;
-            color: #fff;
-            border: 2px solid #fff;
-            padding: 12px 20px;
-            font-size: 1.2rem;
-            font-family: 'VT323', monospace;
-            outline: none;
-            width: 220px;
-            text-align: center;
-            border-radius: 25px;
-            transition: all 0.3s;
-        }
-
-        input[type="password"]:focus {
-            box-shadow: 0 0 15px #fff;
-        }
-
-        button {
-            background: #000;
-            color: #fff;
-            border: 2px solid #fff;
-            padding: 12px 25px;
-            font-size: 1.2rem;
-            font-family: 'VT323', monospace;
-            cursor: pointer;
-            margin-left: 10px;
-            transition: all 0.3s;
-            border-radius: 25px;
-        }
-
-        button:hover {
-            background: #fff;
-            color: #000;
-        }
-
-        /* Error message */
-        #error-msg {
-            color: #ff0000;
-            font-size: 1.2rem;
-            margin-top: 10px;
-            height: 30px;
-            text-shadow: 0 0 5px #ff0000;
-        }
-
-        /* IP Logger Panel (hidden by default) */
-        #ip-logger {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ff00;
-            padding: 25px;
-            width: 80%;
-            max-width: 600px;
-            z-index: 100;
-            box-shadow: 0 0 30px #00ff00;
-            border-radius: 15px;
-        }
-
-        #ip-logger h2 {
-            color: #00ff00;
-            margin-bottom: 15px;
-            font-family: 'Press Start 2P', cursive;
-        }
-
-        #user-info {
-            text-align: left;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        #ip-logger button {
-            background: #00ff00;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-family: 'VT323', monospace;
-            font-size: 1.2rem;
-            border-radius: 25px;
-            margin-top: 10px;
-        }
-
-        /* Admin Panel (hidden by default) */
-        #admin-panel {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #ff0000;
-            padding: 25px;
-            width: 80%;
-            max-width: 600px;
-            z-index: 100;
-            box-shadow: 0 0 30px #ff0000;
-            border-radius: 15px;
-        }
-
-        #admin-panel h2 {
-            color: #ff0000;
-            margin-bottom: 15px;
-            font-family: 'Press Start 2P', cursive;
-        }
-
-        #logged-data {
-            text-align: left;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        #webcam-feed {
+        
+        .video-background iframe {
             width: 100%;
-            height: 250px;
-            background: #000;
-            border: 2px solid #ff0000;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 100%;
         }
-
-        #close-admin {
-            background: #ff0000;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
+        
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 20%, #000 20%, #000 80%, transparent 80%, transparent),
+                        radial-gradient(circle, transparent 20%, #000 20%, #000 80%, transparent 80%, transparent) 50px 50px;
+            background-size: 100px 100px;
+            opacity: 0.1;
+            z-index: -1;
+            animation: bgMove 60s infinite linear;
+        }
+        
+        @keyframes bgMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-500px, 500px); }
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 1;
+            background-color: rgba(10, 25, 47, 0.9);
+            padding: 2rem;
+            border-radius: 5px;
+            border: 1px solid var(--calm-text);
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.3);
+            max-width: 800px;
+            width: 90%;
+            transition: all 1s ease;
+        }
+        
+        body.scary-mode .container {
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--scary-text);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+        
+        h1 {
             font-family: 'VT323', monospace;
+            color: var(--calm-text);
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+            transition: all 1s ease;
+        }
+        
+        body.scary-mode h1 {
+            font-family: 'Creepster', cursive;
+            color: var(--scary-text);
+            text-shadow: 0 0 10px #ff0000;
+            animation: flicker 3s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 0 0 10px #ff0000;
+            }
+            20%, 22%, 24%, 55% {
+                text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000;
+            }
+        }
+        
+        .input-group {
+            margin: 2rem 0;
+        }
+        
+        input {
+            padding: 1rem;
             font-size: 1.2rem;
-            border-radius: 25px;
+            font-family: 'VT323', monospace;
+            background-color: rgba(10, 25, 47, 0.8);
+            color: var(--calm-text);
+            border: 2px solid var(--calm-text);
+            border-radius: 5px;
+            width: 300px;
+            text-align: center;
+            transition: all 1s ease;
         }
-
-        /* Glitch effect */
-        .glitch {
-            animation: glitch 0.5s infinite;
-            filter: drop-shadow(0 0 10px #ff0000);
+        
+        body.scary-mode input {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--scary-text);
+            border: 2px solid var(--scary-text);
         }
-
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-5px, 5px); }
-            40% { transform: translate(-5px, -5px); }
-            60% { transform: translate(5px, 5px); }
-            80% { transform: translate(5px, -5px); }
-            100% { transform: translate(0); }
+        
+        button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-family: 'VT323', monospace;
+            background-color: var(--calm-text);
+            color: var(--calm-bg);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: all 0.3s;
         }
-
-        /* Screen shake */
+        
+        body.scary-mode button {
+            background-color: var(--scary-text);
+            color: #000;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .admin-panel {
+            background-color: rgba(10, 25, 47, 0.9);
+            padding: 1.5rem;
+            border: 2px solid var(--calm-text);
+            border-radius: 5px;
+            margin-top: 2rem;
+            max-height: 500px;
+            overflow-y: auto;
+            transition: all 1s ease;
+        }
+        
+        body.scary-mode .admin-panel {
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--scary-text);
+        }
+        
+        .admin-panel h2 {
+            color: var(--calm-text);
+            margin-top: 0;
+            transition: all 1s ease;
+        }
+        
+        body.scary-mode .admin-panel h2 {
+            color: var(--scary-text);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            text-align: left;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .info-item {
+            padding: 0.5rem;
+            border-bottom: 1px dashed var(--calm-text);
+            transition: all 1s ease;
+        }
+        
+        body.scary-mode .info-item {
+            border-bottom: 1px dashed var(--scary-text);
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: var(--calm-text);
+            transition: all 1s ease;
+        }
+        
+        body.scary-mode .info-label {
+            color: var(--scary-text);
+        }
+        
+        .info-value {
+            word-break: break-all;
+        }
+        
+        .map-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .map {
+            height: 250px;
+            background-color: rgba(10, 25, 47, 0.5);
+            position: relative;
+            border: 1px solid var(--calm-text);
+            transition: all 1s ease;
+        }
+        
+        body.scary-mode .map {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--scary-text);
+        }
+        
+        .webcam-feed {
+            height: 250px;
+            background-color: rgba(10, 25, 47, 0.5);
+            border: 1px solid var(--calm-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 1s ease;
+        }
+        
+        body.scary-mode .webcam-feed {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--scary-text);
+        }
+        
+        .x-mark {
+            position: absolute;
+            color: var(--scary-text);
+            font-size: 3rem;
+            transform: translate(-50%, -50%);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .static {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABGSURBVGhD7cExAQAwDMCg+zfd2VAE5lWSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJN0BZ8QBZ1k4T3kAAAAASUVORK5CYII=');
+            opacity: 0;
+            pointer-events: none;
+            z-index: 99;
+        }
+        
         .shake {
             animation: shake 0.5s;
         }
-
+        
         @keyframes shake {
-            0% { transform: translate(0); }
-            10% { transform: translate(-10px, 0); }
-            20% { transform: translate(10px, 0); }
-            30% { transform: translate(-10px, 0); }
-            40% { transform: translate(10px, 0); }
-            50% { transform: translate(-10px, 0); }
-            60% { transform: translate(10px, 0); }
-            70% { transform: translate(-10px, 0); }
-            80% { transform: translate(10px, 0); }
-            90% { transform: translate(-10px, 0); }
-            100% { transform: translate(0); }
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
         }
-
-        /* Logo pulse animation */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 10px #fff; }
-            50% { box-shadow: 0 0 30px #fff; }
-            100% { box-shadow: 0 0 10px #fff; }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
         }
-
-        /* Rotating images in logo */
-        @keyframes changeImage {
-            0% { opacity: 0; }
-            10% { opacity: 1; }
-            20% { opacity: 1; }
-            30% { opacity: 0; }
-            100% { opacity: 0; }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
         }
-
-        .logo-img {
-            position: absolute;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            object-fit: cover;
-            opacity: 0;
-            animation: changeImage 20s infinite;
-        }
-
-        .logo-img:nth-child(1) { animation-delay: 0s; }
-        .logo-img:nth-child(2) { animation-delay: 4s; }
-        .logo-img:nth-child(3) { animation-delay: 8s; }
-        .logo-img:nth-child(4) { animation-delay: 12s; }
-        .logo-img:nth-child(5) { animation-delay: 16s; }
     </style>
 </head>
 <body>
-    <!-- Background creepy text -->
-    <div class="bg-text" style="top: 10%; left: 5%;">危害国家</div>
-    <div class="bg-text" style="top: 20%; left: 70%;">危険</div>
-    <div class="bg-text" style="top: 50%; left: 30%;">Diddy Blud 67 Took Your IP</div>
-    <div class="bg-text" style="top: 80%; left: 60%;">tsixe</div>
-    <div class="bg-text" style="top: 40%; left: 20%;">Harm Nation</div>
-    <div class="bg-text" style="top: 70%; left: 10%;">あなたは監視されています</div>
-
-    <!-- YouTube audio (hidden, autoplay) -->
-    <iframe id="youtube-bg" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&loop=1&mute=0&controls=0&disablekb=1&modestbranding=1&rel=0&showinfo=0"></iframe>
-
-    <!-- Main content -->
-    <div class="container" id="main-container">
-        <div style="position: relative; width: 180px; height: 180px;">
-            <img src="https://i.imgur.com/5xrKblx.jpg" class="logo-img">
-            <img src="https://i.imgur.com/xxnnVSQ.jpg" class="logo-img">
-            <img src="https://i.imgur.com/P6hMiT1.jpg" class="logo-img">
-            <img src="https://i.imgur.com/Lx2vPoy.jpg" class="logo-img">
-            <img src="https://i.imgur.com/waozfgz.jpg" class="logo-img">
-        </div>
-
-        <h1>SECURE ACCESS</h1>
-        <p>ENTER CODE TO CONTINUE</p>
-
-        <div class="input-box">
-            <input type="password" id="code-input" placeholder="Enter code">
-            <button id="submit-btn">SUBMIT</button>
-        </div>
-
-        <div id="error-msg"></div>
+    <div class="bg-texture"></div>
+    
+    <div class="video-background">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/DlYu8DMKqcs?autoplay=1&controls=0&showinfo=0&autohide=1&loop=1&playlist=DlYu8DMKqcs" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
-
-    <!-- IP Logger Panel (hidden) -->
-    <div id="ip-logger">
-        <h2>IP LOGGER ACTIVATED</h2>
-        <div id="user-info">
-            <p><strong>IP:</strong> <span id="ip-address">Loading...</span></p>
-            <p><strong>Location:</strong> <span id="user-location">Loading...</span></p>
-            <p><strong>Device:</strong> <span id="device-info">Loading...</span></p>
-            <p><strong>Windows User:</strong> <span id="windows-user">Unknown</span></p>
+    
+    <div class="container">
+        <h1>SECURE PORTAL</h1>
+        
+        <div class="input-group">
+            <input type="text" id="accessKey" placeholder="Enter Access Key">
+            <button id="submitBtn">SUBMIT</button>
         </div>
-        <button id="close-logger">CLOSE</button>
+        
+        <div id="adminPanel" class="admin-panel hidden">
+            <h2>SYSTEM INTRUSION DETECTED</h2>
+            <div class="info-grid" id="ipInfo">
+                <!-- Info will be populated here -->
+            </div>
+            
+            <div class="map-container">
+                <div class="map" id="map">
+                    <div class="x-mark hidden" id="xMark">X</div>
+                </div>
+                <div class="webcam-feed" id="webcamFeed">
+                    <p id="webcamText">Camera Feed: Access Denied</p>
+                    <video id="webcamVideo" autoplay class="hidden" width="100%" height="100%"></video>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Admin Panel (hidden) -->
-    <div id="admin-panel">
-        <h2>ADMIN PANEL</h2>
-        <div id="logged-data">
-            <p><strong>Logged IPs:</strong></p>
-            <div id="ip-list"></div>
-        </div>
-
-        <div id="webcam-feed">
-            <p style="color: #ff0000; text-align: center;">[WEBCAM FEED: ACCESS DENIED]</p>
-        </div>
-
-        <button id="close-admin">CLOSE</button>
-    </div>
-
-    <!-- Audio for static noise -->
-    <audio id="static-noise" src="https://assets.mixkit.co/sfx/preview/mixkit-static-radio-1668.mp3" preload="auto"></audio>
-
+    
+    <div class="static" id="static"></div>
+    
+    <audio id="staticSound" src="https://www.soundjay.com/mechanical/sounds/static-01.mp3" preload="auto"></audio>
+    <audio id="scarySound" src="https://www.soundjay.com/human/sounds/scream-01.mp3" preload="auto"></audio>
+    
     <script>
-        // Background music autoplay (YouTube)
-        document.addEventListener('DOMContentLoaded', () => {
-            const youtubeBg = document.getElementById('youtube-bg');
-            youtubeBg.src += "&playlist=trELfLtJwDQ";
-        });
-
-        // Submit button
-        document.getElementById('submit-btn').addEventListener('click', checkCode);
-        document.getElementById('code-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') checkCode();
-        });
-
-        // Static noise
-        const staticNoise = document.getElementById('static-noise');
-        let loggedIPs = [];
-
-        // Check code
-        function checkCode() {
-            const code = document.getElementById('code-input').value;
-            const errorMsg = document.getElementById('error-msg');
-            const mainContainer = document.getElementById('main-container');
-
-            if (code === "leg") {
-                // Correct code - show IP logger
-                errorMsg.textContent = "";
-                logUserInfo();
-                document.getElementById('ip-logger').style.display = "block";
-            } 
-            else if (code === "tsixe") {
-                // Admin code (glitch effect)
-                mainContainer.classList.add('glitch');
+        // DOM elements
+        const accessKeyInput = document.getElementById('accessKey');
+        const submitBtn = document.getElementById('submitBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        const ipInfo = document.getElementById('ipInfo');
+        const map = document.getElementById('map');
+        const xMark = document.getElementById('xMark');
+        const webcamFeed = document.getElementById('webcamFeed');
+        const webcamText = document.getElementById('webcamText');
+        const webcamVideo = document.getElementById('webcamVideo');
+        const staticEffect = document.getElementById('static');
+        const staticSound = document.getElementById('staticSound');
+        const scarySound = document.getElementById('scarySound');
+        const body = document.body;
+        
+        // Switch to scary mode
+        function activateScaryMode() {
+            body.classList.add('scary-mode');
+            document.querySelector('.video-background').innerHTML = `
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/trELfLtJwDQ?autoplay=1&controls=0&showinfo=0&autohide=1&loop=1&playlist=trELfLtJwDQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            `;
+            scarySound.currentTime = 0;
+            scarySound.play();
+        }
+        
+        // Check access key
+        function checkAccessKey() {
+            const key = accessKeyInput.value.trim();
+            
+            // Always activate scary mode when any code is entered
+            activateScaryMode();
+            
+            if (key === 'leg') {
+                // Correct key
+                adminPanel.classList.remove('hidden');
+                ipInfo.innerHTML = '<div class="info-item"><span class="info-label">Status:</span> <span class="info-value">Welcome, admin. Access granted.</span></div>';
+                xMark.classList.add('hidden');
+            } else {
+                // Wrong key - simulate data collection
+                document.body.classList.add('shake');
+                staticSound.currentTime = 0;
+                staticSound.play();
+                
+                // Show static effect
+                staticEffect.style.opacity = '0.7';
                 setTimeout(() => {
-                    mainContainer.classList.remove('glitch');
-                    showAdminPanel();
-                }, 1000);
-            }
-            else {
-                // Wrong code (scary effect)
-                errorMsg.textContent = "INTRUDER DETECTED";
-                mainContainer.classList.add('shake');
-                staticNoise.play();
-
-                // Log user info
-                logUserInfo();
-
-                // Reset after animation
+                    staticEffect.style.opacity = '0';
+                }, 500);
+                
+                // Get IP info
+                fetch('https://api.ipify.org?format=json')
+                    .then(response => response.json())
+                    .then(data => {
+                        const ip = data.ip;
+                        const now = new Date();
+                        const timeString = now.toLocaleString();
+                        
+                        // Simulate collecting more data
+                        const userAgent = navigator.userAgent;
+                        const platform = navigator.platform;
+                        const screenWidth = window.screen.width;
+                        const screenHeight = window.screen.height;
+                        const cpuCores = navigator.hardwareConcurrency || 'Unknown';
+                        const deviceMemory = navigator.deviceMemory || 'Unknown';
+                        
+                        // Simulated location (in reality you'd need a geolocation API)
+                        const locations = [
+                            {city: 'New York', state: 'NY', country: 'USA'},
+                            {city: 'London', state: '', country: 'UK'},
+                            {city: 'Tokyo', state: '', country: 'Japan'},
+                            {city: 'Los Angeles', state: 'CA', country: 'USA'},
+                            {city: 'Berlin', state: '', country: 'Germany'}
+                        ];
+                        const randomLoc = locations[Math.floor(Math.random() * locations.length)];
+                        
+                        // Populate info grid
+                        ipInfo.innerHTML = `
+                            <div class="info-item">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value">INTRUDER DETECTED!</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Time:</span>
+                                <span class="info-value">${timeString}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Public IP:</span>
+                                <span class="info-value">${ip}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Private IP:</span>
+                                <span class="info-value">192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Location:</span>
+                                <span class="info-value">${randomLoc.city}, ${randomLoc.state} ${randomLoc.country}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Device:</span>
+                                <span class="info-value">${platform}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Browser:</span>
+                                <span class="info-value">${userAgent}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Screen:</span>
+                                <span class="info-value">${screenWidth}x${screenHeight}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">CPU Cores:</span>
+                                <span class="info-value">${cpuCores}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">RAM:</span>
+                                <span class="info-value">${deviceMemory} GB</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value">[Requires phishing interaction]</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Name:</span>
+                                <span class="info-value">[Requires social engineering]</span>
+                            </div>
+                        `;
+                        
+                        adminPanel.classList.remove('hidden');
+                        xMark.classList.remove('hidden');
+                        
+                        // Random position for X mark
+                        const xPos = Math.random() * 80 + 10;
+                        const yPos = Math.random() * 80 + 10;
+                        xMark.style.left = `${xPos}%`;
+                        xMark.style.top = `${yPos}%`;
+                        
+                        // Try to access webcam
+                        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                            navigator.mediaDevices.getUserMedia({ video: true })
+                                .then(stream => {
+                                    webcamVideo.srcObject = stream;
+                                    webcamVideo.classList.remove('hidden');
+                                    webcamText.classList.add('hidden');
+                                })
+                                .catch(err => {
+                                    webcamText.textContent = 'Camera Feed: Access Denied';
+                                });
+                        } else {
+                            webcamText.textContent = 'Camera Feed: Not Supported';
+                        }
+                    })
+                    .catch(error => {
+                        ipInfo.innerHTML = `
+                            <div class="info-item">
+                                <span class="info-label">Error:</span>
+                                <span class="info-value">${error.message}</span>
+                            </div>
+                        `;
+                        adminPanel.classList.remove('hidden');
+                    });
+                
                 setTimeout(() => {
-                    mainContainer.classList.remove('shake');
+                    document.body.classList.remove('shake');
                 }, 500);
             }
         }
-
-        // Log user info
-        async function logUserInfo() {
-            try {
-                // Get IP
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                const ip = ipData.ip;
-
-                // Get location (approximate)
-                let location = "Unknown";
-                try {
-                    const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
-                    const geoData = await geoRes.json();
-                    location = `${geoData.city}, ${geoData.country_name}`;
-                } catch (e) {
-                    console.error("Geo error:", e);
-                }
-
-                // Get device info
-                const deviceInfo = navigator.userAgent;
-
-                // Update IP logger panel
-                document.getElementById('ip-address').textContent = ip;
-                document.getElementById('user-location').textContent = location;
-                document.getElementById('device-info').textContent = deviceInfo;
-
-                // Try to get Windows username (simulated)
-                try {
-                    const winUser = "User-" + Math.floor(Math.random() * 1000);
-                    document.getElementById('windows-user').textContent = winUser;
-                } catch (e) {
-                    console.error("Windows user error:", e);
-                }
-
-                // Add to logged IPs
-                loggedIPs.push({ ip, location, deviceInfo });
-                updateAdminPanel();
-
-            } catch (err) {
-                console.error("Error logging user:", err);
-            }
-        }
-
-        // Update admin panel with logged IPs
-        function updateAdminPanel() {
-            const ipList = document.getElementById('ip-list');
-            ipList.innerHTML = "";
-
-            loggedIPs.forEach((entry, index) => {
-                const entryElement = document.createElement('div');
-                entryElement.style.marginBottom = "10px";
-                entryElement.style.padding = "10px";
-                entryElement.style.borderBottom = "1px solid #ff0000";
-                entryElement.innerHTML = `
-                    <p><strong>#${index + 1}:</strong> ${entry.ip}</p>
-                    <p><strong>Location:</strong> ${entry.location}</p>
-                    <p><strong>Device:</strong> ${entry.deviceInfo}</p>
-                `;
-                ipList.appendChild(entryElement);
-            });
-        }
-
-        // Show admin panel
-        function showAdminPanel() {
-            document.getElementById('admin-panel').style.display = "block";
-        }
-
-        // Close IP logger
-        document.getElementById('close-logger').addEventListener('click', () => {
-            document.getElementById('ip-logger').style.display = "none";
+        
+        // Event listeners
+        submitBtn.addEventListener('click', checkAccessKey);
+        accessKeyInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkAccessKey();
         });
-
-        // Close admin panel
-        document.getElementById('close-admin').addEventListener('click', () => {
-            document.getElementById('admin-panel').style.display = "none";
-        });
-
-        // Simulate webcam access (real access requires user permission)
-        function simulateWebcam() {
-            const webcamFeed = document.getElementById('webcam-feed');
-            webcamFeed.innerHTML = `<p style="color: #ff0000; text-align: center; margin-top: 100px;">[WEBCAM FEED: ACCESS DENIED]</p>`;
-        }
-
-        // Initialize
-        simulateWebcam();
+        
+        // Initial animation
+        setTimeout(() => {
+            document.querySelector('h1').classList.add('floating');
+        }, 1000);
     </script>
 </body>
 </html>
